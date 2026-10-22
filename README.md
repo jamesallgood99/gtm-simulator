@@ -3,7 +3,7 @@
 Test positioning, messaging, pricing and features against a synthetic market of AI buyer personas
 before anything ships. Read the results by segment, then take the right questions to real customers.
 
-**[Open the live demo](https://jamesallgood.github.io/gtm-simulator/)** · Built by
+**[Open the live demo](https://jamesallgood99.github.io/gtm-simulator/)** · Built by
 [James Allgood](https://www.linkedin.com/in/jamesallgood)
 
 ![The Compare view: three message variants, their score distributions, and a variant-by-segment table that shows where each one wins and loses](docs/screenshot.png)

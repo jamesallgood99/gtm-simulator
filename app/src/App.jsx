@@ -13,7 +13,7 @@ import { stratifiedSample } from './lib/stats.js';
 import { runScore, runStress, runTalk, runExtract, runMessages, runAdoption, resultsToCsv, parseCsv } from './lib/simulate.js';
 import { readDocument, pastedDocument } from './lib/docs.js';
 
-const REPO_URL = 'https://github.com/jamesallgood/gtm-simulator';
+const REPO_URL = 'https://github.com/jamesallgood99/gtm-simulator';
 
 const NAV = [
   { group: 'Start', items: [
