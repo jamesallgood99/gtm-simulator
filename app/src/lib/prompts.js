@@ -1,4 +1,4 @@
-// The prompts are the method. They're mirrored in skill/synthetic-market/references/personas-and-prompts.md
+// The prompts are the method. They're mirrored in skill/gtm-simulator/references/personas-and-prompts.md
 // so the Claude skill and the dashboard behave the same way.
 
 export const HONESTY_RULES = `You are simulating real buyers, not cheering for the vendor.

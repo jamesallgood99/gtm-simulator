@@ -13,7 +13,7 @@ import { stratifiedSample } from './lib/stats.js';
 import { runScore, runStress, runTalk, runExtract, runMessages, runAdoption, resultsToCsv, parseCsv } from './lib/simulate.js';
 import { readDocument, pastedDocument } from './lib/docs.js';
 
-const REPO_URL = 'https://github.com/jamesallgood/synthetic-market-simulator';
+const REPO_URL = 'https://github.com/jamesallgood/gtm-simulator';
 
 const NAV = [
   { group: 'Start', items: [
@@ -357,7 +357,7 @@ export default function App() {
             <rect x="14" y="9" width="4" height="16" rx="1" fill="var(--b)" />
             <rect x="21" y="13" width="4" height="12" rx="1" fill="var(--c)" />
           </svg>
-          <span className="brand-name">Synthetic Market</span>
+          <span className="brand-name">GTM Simulator</span>
         </div>
         <nav className="nav" aria-label="Main">
           {NAV.map((g) => (

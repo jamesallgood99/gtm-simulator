@@ -1,6 +1,6 @@
 # PRD: Keelstone Safety Platform, v1.0 launch
 
-*Sample document. Keelstone is a fictional product created to demonstrate the Synthetic Market Simulator.*
+*Sample document. Keelstone is a fictional product created to demonstrate GTM Simulator.*
 
 **Owner:** Product · **Status:** Approved for Q2 launch · **Last updated:** March 2026
 

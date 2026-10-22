@@ -1,6 +1,6 @@
 # Creative brief: Keelstone Q2 launch
 
-*Sample document. Keelstone is a fictional product created to demonstrate the Synthetic Market Simulator.*
+*Sample document. Keelstone is a fictional product created to demonstrate GTM Simulator.*
 
 ## The ask
 

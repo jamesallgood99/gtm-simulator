@@ -1,6 +1,6 @@
 # MRD: Keelstone go-to-market
 
-*Sample document. Keelstone is a fictional product created to demonstrate the Synthetic Market Simulator.*
+*Sample document. Keelstone is a fictional product created to demonstrate GTM Simulator.*
 
 **Owner:** Product marketing · **Launch:** Q2 2026
 

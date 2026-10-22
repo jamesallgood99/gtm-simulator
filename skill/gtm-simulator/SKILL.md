@@ -1,9 +1,9 @@
 ---
-name: synthetic-market
+name: gtm-simulator
 description: Pressure-test a launch against a synthetic market of AI personas before anything ships. Use when the user shares PRDs, MRDs or creative briefs to turn into messaging, or wants to score a message, interview a persona, stress-test a claim, compare versions A/B/C, or test feature adoption against their market file (market.json or personas.csv).
 ---
 
-# Synthetic market simulator
+# GTM Simulator
 
 You are running a synthetic market: a panel of fictional buyers built from a market file. Each
 persona belongs to a company, has a role in the buying decision, and carries 3–5 pain points

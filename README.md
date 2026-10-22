@@ -1,9 +1,9 @@
-# Synthetic Market Simulator
+# GTM Simulator
 
 Test positioning, messaging, pricing and features against a synthetic market of AI buyer personas
 before anything ships. Read the results by segment, then take the right questions to real customers.
 
-**[Open the live demo](https://jamesallgood.github.io/synthetic-market-simulator/)** · Built by
+**[Open the live demo](https://jamesallgood.github.io/gtm-simulator/)** · Built by
 [James Allgood](https://www.linkedin.com/in/jamesallgood)
 
 ![The Compare view: three message variants, their score distributions, and a variant-by-segment table that shows where each one wins and loses](docs/screenshot.png)
@@ -11,7 +11,7 @@ before anything ships. Read the results by segment, then take the right question
 ## Why this exists
 
 After my [podcast conversation](https://lnkd.in/gpXy7J_G), I kept getting the same two questions:
-how do you use the synthetic market simulator, and how did you build it? This repo is the answer
+how do you use the GTM simulator, and how did you build it? This repo is the answer
 to both.
 
 At CompScience, an AI-powered workers' comp platform, we tested pricing, messaging and features
@@ -118,7 +118,7 @@ messaging is two API calls. A three-variant run at 100 personas is 15. Adoption 
 
 ### 2. The Claude skill (no code)
 
-`skill/synthetic-market/` is a reusable Claude skill with the same prompts and rules. Zip that folder
+`skill/gtm-simulator/` is a reusable Claude skill with the same prompts and rules. Zip that folder
 and add it as a skill in Claude, or copy it to `~/.claude/skills/` for Claude Code. Then give Claude
 `market/output/market.json` (or `personas.csv`) plus your PRDs and briefs, and ask it to write messaging, score, talk, stress, compare or test adoption.
 
@@ -170,7 +170,7 @@ market/
   generate_market.py        builds 100 companies × 5 personas
   make_demo_results.py      heuristic demo scores for the dashboard (not model output)
   output/                   market.json, personas.csv, companies.csv
-skill/synthetic-market/     the Claude skill: SKILL.md plus prompts, rubric, report format
+skill/gtm-simulator/        the Claude skill: SKILL.md plus prompts, rubric, report format
 app/                        the React dashboard (Vite)
   src/lib/prompts.js        the prompts, mirrored in the skill
   src/lib/docs.js           reads PDF, Word, Markdown and text uploads in the browser
