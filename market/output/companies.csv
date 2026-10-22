@@ -1,0 +1,101 @@
+id,name,industry,size_band,employees,region,trigger
+C001,Thornton Logistics,Warehousing & logistics,"200-1,000",250,Mountain,board asked for a total cost of risk review
+C002,Rookwick Distribution,Warehousing & logistics,50-200,60,West,"nothing urgent, claims have been quiet"
+C003,Marridge Hospitality,Hospitality,50-200,90,West,opening a new facility
+C004,Stonebrook Civil,Construction,50-200,60,Mountain,lost the safety coordinator and has not backfilled
+C005,Vellbrook Home Health,Healthcare & senior living,"200-1,000",690,Mountain,had a serious injury on site this year
+C006,Bridstead Logistics,Warehousing & logistics,50-200,120,Mountain,carrier is threatening non-renewal
+C007,Lanbrook Builders,Construction,50-200,120,Midwest,had a serious injury on site this year
+C008,Quinwick Transport,Transportation,"200-1,000",520,West,lost the safety coordinator and has not backfilled
+C009,Thorncrest Builders,Construction,50-200,190,Mountain,opening a new facility
+C010,Marbrook Packing,Agriculture & food processing,"200-1,000",850,Midwest,opening a new facility
+C011,Rookmere Trucking,Transportation,"1,000-5,000",1670,West,had a serious injury on site this year
+C012,Corvgate Contracting,Construction,"200-1,000",840,Southeast,carrier is threatening non-renewal
+C013,Thornton Health,Healthcare & senior living,"200-1,000",460,Southwest,"nothing urgent, claims have been quiet"
+C014,Marbrook Care Communities,Healthcare & senior living,"200-1,000",490,Southwest,opening a new facility
+C015,Bridton Transport,Transportation,"200-1,000",470,West,had a serious injury on site this year
+C016,Thornhaven Fulfillment,Warehousing & logistics,50-200,170,Mountain,renewal is 90 days out
+C017,Rookwick Freight,Warehousing & logistics,"200-1,000",600,West,had a serious injury on site this year
+C018,Lanwick Resorts,Hospitality,"200-1,000",370,Midwest,renewal is 90 days out
+C019,Stonevale Farms,Agriculture & food processing,50-200,90,Midwest,OSHA inspection last quarter
+C020,Sabwick Industries,Manufacturing,50-200,160,Mountain,opening a new facility
+C021,Ironcrest Fabrication,Manufacturing,"200-1,000",330,Northeast,recent near-miss caught on camera
+C022,Corvhaven Components,Manufacturing,"1,000-5,000",2140,West,recent near-miss caught on camera
+C023,Ashford Manufacturing,Manufacturing,50-200,70,Southeast,OSHA inspection last quarter
+C024,Talgate Outfitters,Retail,"200-1,000",280,Southwest,"nothing urgent, claims have been quiet"
+C025,Corvgate Farms,Agriculture & food processing,"1,000-5,000",3550,Midwest,experience mod went above 1.2 at the last renewal
+C026,Granwell Logistics,Warehousing & logistics,"1,000-5,000",4910,Southeast,opening a new facility
+C027,Bridton Packing,Agriculture & food processing,50-200,140,Southeast,recent near-miss caught on camera
+C028,Wexridge Fabrication,Manufacturing,"1,000-5,000",3880,Southeast,carrier is threatening non-renewal
+C029,Sabcrest Hospitality,Hospitality,50-200,70,Midwest,"nothing urgent, claims have been quiet"
+C030,Grandale Components,Manufacturing,"200-1,000",510,West,carrier is threatening non-renewal
+C031,Wexgate Builders,Construction,"200-1,000",280,Southwest,opening a new facility
+C032,Mercrest Logistics,Warehousing & logistics,"200-1,000",830,Northeast,experience mod went above 1.2 at the last renewal
+C033,Pellfield Health,Healthcare & senior living,"200-1,000",990,West,had a serious injury on site this year
+C034,Corvbrook Health,Healthcare & senior living,50-200,130,Southeast,opening a new facility
+C035,Redwell Transport,Transportation,50-200,130,Southeast,opening a new facility
+C036,Cobalhaven Logistics,Warehousing & logistics,50-200,90,Mountain,had a serious injury on site this year
+C037,Pellford Supply,Retail,"200-1,000",360,Northeast,board asked for a total cost of risk review
+C038,Merridge Fulfillment,Warehousing & logistics,"200-1,000",860,Mountain,had a serious injury on site this year
+C039,Granmere Packing,Agriculture & food processing,"1,000-5,000",2910,Southeast,opening a new facility
+C040,Wexgate Civil,Construction,"1,000-5,000",3340,Midwest,OSHA inspection last quarter
+C041,Merfield Manufacturing,Manufacturing,"200-1,000",470,Northeast,experience mod went above 1.2 at the last renewal
+C042,Halfield Fabrication,Manufacturing,"1,000-5,000",1480,Southeast,recent near-miss caught on camera
+C043,Marcrest Logistics,Warehousing & logistics,50-200,70,Southwest,had a serious injury on site this year
+C044,Vellmere Logistics,Warehousing & logistics,"200-1,000",200,Mountain,carrier is threatening non-renewal
+C045,Thornvale Civil,Construction,50-200,70,Mountain,had a serious injury on site this year
+C046,Quingate Trucking,Transportation,50-200,80,Mountain,"nothing urgent, claims have been quiet"
+C047,Marpoint Health,Healthcare & senior living,"1,000-5,000",1450,Mountain,carrier is threatening non-renewal
+C048,Corvvale Health,Healthcare & senior living,"1,000-5,000",3610,Southeast,opening a new facility
+C049,Rookdale Contracting,Construction,"200-1,000",760,Northeast,"nothing urgent, claims have been quiet"
+C050,Merridge Fabrication,Manufacturing,50-200,160,West,"nothing urgent, claims have been quiet"
+C051,Merton Stores,Retail,"200-1,000",890,Southeast,had a serious injury on site this year
+C052,Bridton Logistics,Warehousing & logistics,"200-1,000",340,Northeast,carrier is threatening non-renewal
+C053,Ashstead Construction,Construction,"200-1,000",800,Southwest,"nothing urgent, claims have been quiet"
+C054,Redford Distribution,Warehousing & logistics,"200-1,000",400,Southwest,"nothing urgent, claims have been quiet"
+C055,Lanpoint Construction,Construction,50-200,150,Midwest,renewal is 90 days out
+C056,Lanmere Distribution,Warehousing & logistics,"1,000-5,000",3070,Mountain,experience mod went above 1.2 at the last renewal
+C057,Quincrest Senior Living,Healthcare & senior living,50-200,160,Northeast,"nothing urgent, claims have been quiet"
+C058,Cobalhaven Transit,Transportation,"200-1,000",400,Midwest,recent near-miss caught on camera
+C059,Halpoint Industries,Manufacturing,"200-1,000",880,Midwest,lost the safety coordinator and has not backfilled
+C060,Granton Senior Living,Healthcare & senior living,50-200,70,Southeast,renewal is 90 days out
+C061,Redhaven Fabrication,Manufacturing,"200-1,000",450,Northeast,experience mod went above 1.2 at the last renewal
+C062,Merhaven Builders,Construction,"200-1,000",480,Mountain,had a serious injury on site this year
+C063,Thornton Construction,Construction,"200-1,000",400,Midwest,"nothing urgent, claims have been quiet"
+C064,Marbrook Transit,Transportation,50-200,70,Midwest,opening a new facility
+C065,Granford Foods,Agriculture & food processing,"200-1,000",930,Midwest,"nothing urgent, claims have been quiet"
+C066,Thorncrest Construction,Construction,"200-1,000",670,Southwest,OSHA inspection last quarter
+C067,Pellwick Packing,Agriculture & food processing,"200-1,000",450,Mountain,board asked for a total cost of risk review
+C068,Corvbrook Fulfillment,Warehousing & logistics,50-200,180,West,"nothing urgent, claims have been quiet"
+C069,Sabvale Resorts,Hospitality,"1,000-5,000",2840,Southeast,board asked for a total cost of risk review
+C070,Pellpoint Manufacturing,Manufacturing,50-200,90,Southwest,renewal is 90 days out
+C071,Merwell Contracting,Construction,50-200,120,Southeast,had a serious injury on site this year
+C072,Lanmere Outfitters,Retail,50-200,130,Mountain,renewal is 90 days out
+C073,Talmere Care Communities,Healthcare & senior living,50-200,190,Midwest,recent near-miss caught on camera
+C074,Lanpoint Restaurant Group,Hospitality,50-200,120,Southwest,board asked for a total cost of risk review
+C075,Bridridge Freight,Warehousing & logistics,"1,000-5,000",1270,Southwest,experience mod went above 1.2 at the last renewal
+C076,Halton Hospitality,Hospitality,"200-1,000",770,Northeast,carrier is threatening non-renewal
+C077,Quingate Fabrication,Manufacturing,"1,000-5,000",1820,Mountain,board asked for a total cost of risk review
+C078,Redton Carriers,Transportation,50-200,70,Midwest,opening a new facility
+C079,Granstead Farms,Agriculture & food processing,"200-1,000",500,Mountain,opening a new facility
+C080,Corvmere Foods,Agriculture & food processing,"200-1,000",570,Southeast,OSHA inspection last quarter
+C081,Thornpoint Health,Healthcare & senior living,"1,000-5,000",4190,Mountain,lost the safety coordinator and has not backfilled
+C082,Corvstead Industries,Manufacturing,"200-1,000",590,Mountain,"nothing urgent, claims have been quiet"
+C083,Sabcrest Manufacturing,Manufacturing,"200-1,000",530,West,carrier is threatening non-renewal
+C084,Ironstead Resorts,Hospitality,"1,000-5,000",4920,Southeast,board asked for a total cost of risk review
+C085,Cobalgate Retail,Retail,"200-1,000",860,Southeast,OSHA inspection last quarter
+C086,Corvwick Contracting,Construction,"200-1,000",330,Northeast,renewal is 90 days out
+C087,Marvale Senior Living,Healthcare & senior living,50-200,120,Midwest,board asked for a total cost of risk review
+C088,Mardale Transport,Transportation,50-200,120,Midwest,opening a new facility
+C089,Redstead Civil,Construction,50-200,160,Midwest,"nothing urgent, claims have been quiet"
+C090,Bridwick Transport,Transportation,50-200,130,West,opening a new facility
+C091,Granfield Hotels,Hospitality,"200-1,000",530,West,recent near-miss caught on camera
+C092,Rookpoint Builders,Construction,"1,000-5,000",2160,Southeast,board asked for a total cost of risk review
+C093,Stonestead Builders,Construction,"200-1,000",360,Mountain,opening a new facility
+C094,Corvgate Manufacturing,Manufacturing,"200-1,000",730,Southwest,opening a new facility
+C095,Marbrook Fabrication,Manufacturing,"1,000-5,000",1600,Northeast,carrier is threatening non-renewal
+C096,Cobalgate Manufacturing,Manufacturing,"1,000-5,000",4360,Midwest,lost the safety coordinator and has not backfilled
+C097,Halfield Stores,Retail,"200-1,000",290,Midwest,had a serious injury on site this year
+C098,Thornhaven Builders,Construction,"1,000-5,000",4220,Northeast,experience mod went above 1.2 at the last renewal
+C099,Velldale Construction,Construction,"200-1,000",200,Southeast,recent near-miss caught on camera
+C100,Ashton Growers,Agriculture & food processing,50-200,190,West,carrier is threatening non-renewal

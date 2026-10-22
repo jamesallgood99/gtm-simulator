@@ -1,0 +1,201 @@
+{
+  "market_name": "Workers' Comp Buyers",
+  "product_category": "AI-powered workplace safety and workers' compensation platform",
+  "description": "A fictional market of 100 employers in high-injury industries. Each company has five people with a stake in the buying decision: the broker of record, the CFO, the IT manager, the safety manager and a frontline worker. Each person carries 3-5 pain points drawn from their role, plus one that is specific to their role in their industry. Replace the industry mix with your real customer distribution, and rewrite roles and pain points to fit your own ICP.",
+  "seed": 42,
+  "n_companies": 100,
+  "pains_per_persona": [3, 5],
+  "industry_mix": {
+    "Construction": 20,
+    "Manufacturing": 18,
+    "Warehousing & logistics": 16,
+    "Healthcare & senior living": 12,
+    "Transportation": 10,
+    "Agriculture & food processing": 10,
+    "Hospitality": 8,
+    "Retail": 6
+  },
+  "size_mix": {
+    "50-200": 35,
+    "200-1,000": 45,
+    "1,000-5,000": 20
+  },
+  "themes": {
+    "cost": "Premiums, claim costs, total cost of risk",
+    "roi": "Proving a return on spend",
+    "safety": "Preventing injuries",
+    "compliance": "OSHA, regulators, audits",
+    "admin": "Manual work, paperwork, reporting",
+    "privacy": "Video, employee data, being watched",
+    "integration": "Systems, networks, sites",
+    "relationship": "Trust with clients, employers or crews",
+    "differentiation": "Standing out from competitors",
+    "revenue": "Growing commission or business",
+    "change": "Rollout fatigue, adoption"
+  },
+  "roles": [
+    {
+      "key": "broker",
+      "label": "Insurance broker",
+      "titles": ["Broker of Record", "Commercial Lines Producer", "Risk Management Consultant", "Account Executive, P&C"],
+      "buying_role": "Trusted advisor / gatekeeper",
+      "skepticism": 0.65,
+      "change_fatigue": 0.45,
+      "context": "Works for an outside brokerage. Places the policy, owns the client relationship and earns commission on it. Wary of anything that goes around them or makes them look out of date.",
+      "core_pains": [
+        { "key": "client_relationships", "label": "Improve client relationships", "description": "Wants to be the strategic advisor clients call all year, not just the person who shows up at renewal with quotes.", "tags": ["relationship"], "weight": 0.85 },
+        { "key": "differentiate", "label": "Stand out in a commodity market", "description": "Every broker quotes the same carriers at similar prices. Needs something competitors can't offer.", "tags": ["differentiation"], "weight": 0.85 },
+        { "key": "grow_commission", "label": "Make more commission", "description": "Wants to place more premium, win new accounts and grow the book without adding headcount.", "tags": ["revenue"], "weight": 0.8 }
+      ],
+      "optional_pains": [
+        { "key": "retention", "label": "Keep clients at renewal", "description": "A painful renewal is when a client shops the account to another broker.", "tags": ["relationship", "cost"], "weight": 0.7 },
+        { "key": "carrier_leverage", "label": "Get leverage with carriers", "description": "Needs data to negotiate better terms and fight off non-renewals in a hard market.", "tags": ["cost", "differentiation"], "weight": 0.65 },
+        { "key": "service_load", "label": "Servicing small accounts profitably", "description": "Loss runs, certificates and claim follow-up eat the time that should go to selling.", "tags": ["admin", "revenue"], "weight": 0.55 }
+      ]
+    },
+    {
+      "key": "cfo",
+      "label": "CFO",
+      "titles": ["CFO", "VP of Finance", "Controller", "Director of Finance"],
+      "buying_role": "Economic buyer / approver",
+      "skepticism": 0.75,
+      "change_fatigue": 0.35,
+      "context": "Owns the insurance line item and total cost of risk. Wants hard-dollar ROI and a payback period, not soft safety benefits.",
+      "core_pains": [
+        { "key": "premium_cost", "label": "Rising workers' comp premium", "description": "The premium and experience mod keep climbing, and renewal is a painful conversation with leadership.", "tags": ["cost"], "weight": 0.85 },
+        { "key": "cost_of_risk", "label": "Unpredictable total cost of risk", "description": "Claims, reserves and premium audits make the insurance budget impossible to forecast.", "tags": ["cost"], "weight": 0.7 }
+      ],
+      "optional_pains": [
+        { "key": "roi_proof", "label": "Every new spend needs hard ROI", "description": "New software only gets approved with a clear payback period.", "tags": ["roi"], "weight": 0.75 },
+        { "key": "claim_costs", "label": "Claim costs hitting the P&L", "description": "Large claims and reserves move quarterly results.", "tags": ["cost", "safety"], "weight": 0.65 },
+        { "key": "lost_productivity", "label": "Lost productivity from injuries", "description": "Injured workers mean overtime, temps and missed output.", "tags": ["cost", "safety"], "weight": 0.6 },
+        { "key": "audit_surprises", "label": "Premium audit surprises", "description": "Payroll classification mistakes turn into surprise bills after the policy year.", "tags": ["admin", "cost"], "weight": 0.5 }
+      ]
+    },
+    {
+      "key": "it_manager",
+      "label": "IT manager",
+      "titles": ["IT Manager", "Director of IT", "Systems Administrator", "IT Operations Lead"],
+      "buying_role": "Technical evaluator / veto",
+      "skepticism": 0.6,
+      "change_fatigue": 0.7,
+      "context": "Small team covering many sites. Has to approve cameras on the network, where data is stored, integrations and the support load.",
+      "core_pains": [
+        { "key": "data_security", "label": "Securing video and employee data", "description": "Any vendor touching camera footage or HR data is a security and legal review.", "tags": ["privacy"], "weight": 0.85 },
+        { "key": "support_load", "label": "Small team, too many systems", "description": "Every new tool means more tickets, more logins and more things to patch.", "tags": ["change", "admin"], "weight": 0.75 }
+      ],
+      "optional_pains": [
+        { "key": "integrations", "label": "Integrating with HR, payroll and claims systems", "description": "Data lives in disconnected systems, and every integration breaks on the next update.", "tags": ["integration"], "weight": 0.6 },
+        { "key": "vendor_reviews", "label": "Vendor security reviews", "description": "SOC 2 reports, questionnaires and contracts for every new vendor.", "tags": ["privacy", "compliance"], "weight": 0.6 },
+        { "key": "site_infrastructure", "label": "Cameras and networks across sites", "description": "Every location has different hardware, bandwidth and someone who 'knows the password'.", "tags": ["integration"], "weight": 0.55 }
+      ]
+    },
+    {
+      "key": "safety_manager",
+      "label": "Safety manager",
+      "titles": ["Safety Manager", "EHS Director", "Risk & Safety Coordinator", "Site Safety Lead"],
+      "buying_role": "Champion / daily user",
+      "skepticism": 0.4,
+      "change_fatigue": 0.4,
+      "context": "Owns the safety program, incident investigations and training. Usually understaffed and covering more sites than they can walk.",
+      "core_pains": [
+        { "key": "injury_prevention", "label": "Preventing injuries before they happen", "description": "Finds out about unsafe behavior and near-misses after someone is already hurt.", "tags": ["safety"], "weight": 0.9 },
+        { "key": "site_coverage", "label": "Can't be on every site", "description": "Too many sites and shifts for one person or a small team to observe.", "tags": ["safety", "admin"], "weight": 0.8 }
+      ],
+      "optional_pains": [
+        { "key": "osha", "label": "OSHA logs, inspections and citations", "description": "Recordkeeping and inspection readiness take time away from the floor.", "tags": ["compliance"], "weight": 0.7 },
+        { "key": "investigations", "label": "Slow incident investigations", "description": "Root cause takes weeks of interviews and paperwork.", "tags": ["admin", "safety"], "weight": 0.6 },
+        { "key": "prove_value", "label": "Proving safety's value to leadership", "description": "Safety is seen as a cost center. Needs numbers to win budget.", "tags": ["roi", "cost"], "weight": 0.65 },
+        { "key": "training", "label": "Getting crews to take training seriously", "description": "Training is a checkbox and behavior doesn't change.", "tags": ["safety", "change"], "weight": 0.55 }
+      ]
+    },
+    {
+      "key": "worker",
+      "label": "Frontline worker",
+      "titles": ["Warehouse Associate", "Machine Operator", "Crew Lead", "Laborer", "CNA", "Driver", "Line Cook"],
+      "buying_role": "End user / adoption risk",
+      "skepticism": 0.7,
+      "change_fatigue": 0.75,
+      "context": "Does the physical work. Cares about getting home uninjured and not being watched or blamed. Has seen safety programs come and go.",
+      "core_pains": [
+        { "key": "getting_hurt", "label": "Getting hurt on the job", "description": "Knows people who've been injured, and knows what an injury does to a paycheck.", "tags": ["safety"], "weight": 0.75 },
+        { "key": "being_watched", "label": "Being watched and blamed", "description": "Worries that cameras and data get used for discipline, not protection.", "tags": ["privacy", "relationship"], "weight": 0.7 }
+      ],
+      "optional_pains": [
+        { "key": "pace_pressure", "label": "Pressure to work faster than is safe", "description": "Quotas and short staffing push people to cut corners.", "tags": ["safety"], "weight": 0.7 },
+        { "key": "reporting_fear", "label": "Fear of reporting an injury", "description": "Worries that reporting a strain or near-miss marks them as a problem.", "tags": ["relationship", "safety"], "weight": 0.6 },
+        { "key": "safety_theater", "label": "Safety programs that are just paperwork", "description": "Has signed a lot of forms. Nothing changed on the floor.", "tags": ["change"], "weight": 0.55 }
+      ]
+    }
+  ],
+  "industry_pains": {
+    "Construction": {
+      "broker": { "label": "Wrap-ups and subcontractor requirements", "description": "Contractor clients need help with OCIP/CCIP programs and sub insurance requirements.", "tags": ["relationship", "differentiation"] },
+      "cfo": { "label": "A high mod loses bids", "description": "General contractors and owners screen out bidders with a high EMR.", "tags": ["cost", "revenue"] },
+      "it_manager": { "label": "Connectivity on temporary job sites", "description": "Job sites move every few months and rarely have reliable networks.", "tags": ["integration"] },
+      "safety_manager": { "label": "Falls and subcontractor safety", "description": "Fall protection and keeping subs to the same standard across job sites.", "tags": ["safety", "compliance"] },
+      "worker": { "label": "Falls and struck-by hazards", "description": "Ladders, scaffolds, roofs and equipment moving around the site.", "tags": ["safety"] }
+    },
+    "Manufacturing": {
+      "broker": { "label": "Clients with repetitive-strain claims", "description": "Ergonomic claims are slow, expensive and hard to explain to carriers.", "tags": ["relationship", "cost"] },
+      "cfo": { "label": "Lost-time claims stall production", "description": "One injury on a line can cost a shift's output.", "tags": ["cost", "safety"] },
+      "it_manager": { "label": "Plant-floor network segmentation", "description": "Cameras and sensors near OT systems need to be isolated.", "tags": ["privacy", "integration"] },
+      "safety_manager": { "label": "Machine guarding and lockout/tagout", "description": "The most-cited OSHA violations in the plant.", "tags": ["safety", "compliance"] },
+      "worker": { "label": "Repetitive strain from line work", "description": "The same motion hundreds of times a shift.", "tags": ["safety"] }
+    },
+    "Warehousing & logistics": {
+      "broker": { "label": "Peak-season claim spikes", "description": "Clients' claims jump with temp labor every peak season.", "tags": ["relationship", "cost"] },
+      "cfo": { "label": "Temp labor drives claims", "description": "New and temporary workers get hurt at higher rates.", "tags": ["cost"] },
+      "it_manager": { "label": "Cameras across large DCs", "description": "Hundreds of cameras and a WMS that doesn't talk to anything.", "tags": ["integration"] },
+      "safety_manager": { "label": "Lifting injuries and forklift incidents", "description": "Manual handling and powered equipment drive most claims.", "tags": ["safety"] },
+      "worker": { "label": "Rate quotas and heavy lifting", "description": "Pick rates leave little room for lifting the right way.", "tags": ["safety"] }
+    },
+    "Healthcare & senior living": {
+      "broker": { "label": "Staffing shortages drive loss ratios", "description": "Short-staffed facilities produce more injuries and harder renewals.", "tags": ["relationship", "cost"] },
+      "cfo": { "label": "Caregiver injuries deepen staffing gaps", "description": "Every injured caregiver means agency staff at premium rates.", "tags": ["cost"] },
+      "it_manager": { "label": "HIPAA and cameras near residents", "description": "Video near patients or residents raises privacy and regulatory risk.", "tags": ["privacy", "compliance"] },
+      "safety_manager": { "label": "Patient-handling injuries", "description": "Transfers and repositioning drive back and shoulder claims.", "tags": ["safety"] },
+      "worker": { "label": "Lifting residents short-staffed", "description": "Two-person lifts done by one person because there's no one else.", "tags": ["safety"] }
+    },
+    "Transportation": {
+      "broker": { "label": "Hard market for transportation accounts", "description": "Carriers are pulling back and every account is a fight to place.", "tags": ["differentiation", "cost"] },
+      "cfo": { "label": "Combined auto and comp losses", "description": "Driver injuries hit workers' comp and auto at the same time.", "tags": ["cost"] },
+      "it_manager": { "label": "Telematics already in place", "description": "Trucks already have cameras and telematics. Doesn't want a second system.", "tags": ["integration", "change"] },
+      "safety_manager": { "label": "Loading and dock injuries", "description": "Drivers get hurt outside the cab: docks, liftgates, slips.", "tags": ["safety"] },
+      "worker": { "label": "Loading, unloading and long hours", "description": "Fatigue plus heavy freight at the end of a long route.", "tags": ["safety"] }
+    },
+    "Agriculture & food processing": {
+      "broker": { "label": "Seasonal workforce is hard to underwrite", "description": "Carriers struggle to price accounts whose headcount swings by season.", "tags": ["differentiation", "cost"] },
+      "cfo": { "label": "Seasonal labor costs and claims", "description": "Peak season brings new workers, overtime and claims.", "tags": ["cost"] },
+      "it_manager": { "label": "Limited connectivity at remote sites", "description": "Fields, packing sheds and plants far from good internet.", "tags": ["integration"] },
+      "safety_manager": { "label": "Training a seasonal, multilingual crew", "description": "New workers every season, in several languages.", "tags": ["safety", "compliance"] },
+      "worker": { "label": "Heat, knives and cold rooms", "description": "Cuts, heat stress and slippery floors.", "tags": ["safety"] }
+    },
+    "Hospitality": {
+      "broker": { "label": "Many small locations, small premiums", "description": "Lots of locations with thin premium per account. Hard to service profitably.", "tags": ["revenue", "admin"] },
+      "cfo": { "label": "Turnover drives new-hire injuries", "description": "High turnover means constant new hires, and new hires get hurt.", "tags": ["cost"] },
+      "it_manager": { "label": "Guest privacy around cameras", "description": "Cameras in guest areas raise privacy and brand concerns.", "tags": ["privacy"] },
+      "safety_manager": { "label": "Slips, burns and housekeeping strains", "description": "Kitchens and housekeeping drive most claims.", "tags": ["safety"] },
+      "worker": { "label": "Burns and slips during the rush", "description": "Hot surfaces and wet floors when everyone's moving fast.", "tags": ["safety"] }
+    },
+    "Retail": {
+      "broker": { "label": "Retail accounts shop on price", "description": "Retail clients move for a slightly cheaper quote.", "tags": ["differentiation", "revenue"] },
+      "cfo": { "label": "Thin margins amplify premium hikes", "description": "A premium increase eats a real share of store profit.", "tags": ["cost"] },
+      "it_manager": { "label": "Store cameras already used for loss prevention", "description": "Cameras exist, but they belong to loss prevention and have their own rules.", "tags": ["privacy", "integration"] },
+      "safety_manager": { "label": "Stocking and ladder injuries across stores", "description": "Hundreds of stores, each with its own back room.", "tags": ["safety"] },
+      "worker": { "label": "Ladders, stocking and customer incidents", "description": "Overhead stocking and the occasional angry customer.", "tags": ["safety"] }
+    }
+  },
+  "triggers": [
+    "experience mod went above 1.2 at the last renewal",
+    "had a serious injury on site this year",
+    "OSHA inspection last quarter",
+    "renewal is 90 days out",
+    "lost the safety coordinator and has not backfilled",
+    "carrier is threatening non-renewal",
+    "opening a new facility",
+    "board asked for a total cost of risk review",
+    "recent near-miss caught on camera",
+    "nothing urgent, claims have been quiet"
+  ]
+}
