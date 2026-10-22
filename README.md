@@ -51,12 +51,24 @@ so you walk into the CAB already knowing which questions matter.
 
 ## How to use it
 
+Start with the launch's documents. Upload the PRDs, MRDs and creative briefs on the Documents page
+(PDF, Word, Markdown or text). Claude reads them and pulls out:
+
+- **Features**, with who each one is built for and how much setup it needs (from the PRD)
+- **Claims**, with the proof behind each one, rated 1 to 5 (from the MRD)
+- **Guardrails**: tone, proposition and mandatories (from the creative brief)
+
+Then it writes three message directions that follow the brief and use only claims the documents can
+prove. Those directions are what the market tests. The weakest claim goes straight to Stress, and
+the features go to Adoption.
+
 | Mode | What you do |
 |---|---|
 | **Score** | Run a positioning statement or pricing page past the full market and read the results by segment. |
 | **Talk** | Interview one persona live and let them push back on your pitch. |
 | **Stress** | Point your toughest critics at your weakest claim, and get back a version that survives them. |
 | **Compare** | Run versions A, B and C side by side against the same personas. |
+| **Adoption** | Match every feature in the PRD against every persona: how enthusiastic each one is, and how many are still using it at 90 days and at 12 months. |
 
 ### The two rules
 
@@ -70,6 +82,14 @@ so you walk into the CAB already knowing which questions matter.
 The demo shows rule 2 in action. Variant B ("Fewer injuries. Fewer claims.") is most likely to land
 overall, but it trails A by 40+ points with CFOs and C by 40+ points with brokers. Both roles can
 block a deal.
+
+Adoption shows the same thing at the feature level. Hazard detection is the safety manager's
+favorite and the IT manager's least favorite, and IT can block it. The coaching feed and near-miss
+reporting start strong with frontline workers and fade by month 12, while the broker report and the
+cost-of-risk dashboard grow as renewal comes around and history builds up.
+
+The demo runs on three fictional sample documents for a made-up product, Keelstone, in
+`app/public/data/samples/`. Read them to see what the extraction and messaging are built from.
 
 ### What it's good at, and what it isn't
 
@@ -86,12 +106,12 @@ npm install
 npm run dev
 ```
 
-It opens with demo data, so it works without an API key. The demo scores come from a simple,
+It opens on the Documents page with the sample documents loaded, so it works without an API key. The demo scores come from a simple,
 transparent heuristic in `market/make_demo_results.py`, not from a model, and the app says so.
 
 To run live, open **Settings** and paste a [Claude API key](https://console.anthropic.com). The key
-stays in your browser and goes only to `api.anthropic.com`. A three-variant run at 100 personas is
-15 API calls.
+stays in your browser and goes only to `api.anthropic.com`. Reading the documents and writing the
+messaging is two API calls. A three-variant run at 100 personas is 15. Adoption at 50 personas is 10.
 
 **Deploy your own copy:** fork the repo, then go to **Settings → Pages** and set the source to
 **GitHub Actions**. The included workflow builds and publishes the dashboard on every push to `main`.
@@ -100,7 +120,7 @@ stays in your browser and goes only to `api.anthropic.com`. A three-variant run 
 
 `skill/synthetic-market/` is a reusable Claude skill with the same prompts and rules. Zip that folder
 and add it as a skill in Claude, or copy it to `~/.claude/skills/` for Claude Code. Then give Claude
-`market/output/market.json` (or `personas.csv`) and ask it to score, talk, stress or compare.
+`market/output/market.json` (or `personas.csv`) plus your PRDs and briefs, and ask it to write messaging, score, talk, stress, compare or test adoption.
 
 The skill can write results as CSV. **Import CSV** in the dashboard turns a chat run into charts.
 
@@ -144,6 +164,7 @@ If two variants' ranges overlap, the run hasn't found a real difference, and the
 ## Repo layout
 
 ```
+app/public/data/samples/   the sample PRD, MRD and creative brief (fictional)
 market/
   config.example.json       the market definition: industries, roles, pain points
   generate_market.py        builds 100 companies × 5 personas
@@ -152,6 +173,7 @@ market/
 skill/synthetic-market/     the Claude skill: SKILL.md plus prompts, rubric, report format
 app/                        the React dashboard (Vite)
   src/lib/prompts.js        the prompts, mirrored in the skill
+  src/lib/docs.js           reads PDF, Word, Markdown and text uploads in the browser
   src/lib/stats.js          Monte Carlo, stratified sampling, critic selection
   src/lib/analysis.js       segment splits and recommendation logic
 ```

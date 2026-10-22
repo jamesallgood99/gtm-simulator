@@ -10,9 +10,9 @@ function Severity({ n }) {
   );
 }
 
-export default function StressView({ market, live, busy, result, defaultClaim, onRun }) {
+export default function StressView({ market, live, busy, result, defaultClaim, defaultTheme, onRun }) {
   const [claim, setClaim] = useState(result?.claim ?? defaultClaim ?? '');
-  const [theme, setTheme] = useState(result?.theme ?? 'cost');
+  const [theme, setTheme] = useState(result?.theme ?? defaultTheme ?? 'cost');
   const critics = useMemo(() => toughestCritics(market.personas, theme), [market, theme]);
   const byId = useMemo(() => Object.fromEntries(market.personas.map((p) => [p.id, p])), [market]);
   const attacks = result ? [...result.attacks].sort((a, b) => b.severity - a.severity) : [];
@@ -37,7 +37,7 @@ export default function StressView({ market, live, busy, result, defaultClaim, o
             <button className="btn primary" disabled={!claim.trim() || busy} onClick={() => onRun(claim.trim(), critics)}>
               {live ? 'Run the stress test' : 'Add an API key to run'}
             </button>
-            {!live && <span className="note">Demo mode shows a sample result for the claim above.</span>}
+            {!live && <span className="note">Demo mode shows a sample result for the weakest claim in the sample MRD.</span>}
           </div>
         </div>
         <div className="panel">

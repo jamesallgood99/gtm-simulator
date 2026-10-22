@@ -2,6 +2,8 @@ import React, { useEffect } from 'react';
 
 const ICONS = {
   compare: 'M4 20V10M10 20V4M16 20v-7M22 20H2',
+  docs: 'M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8l-5-5Zm0 0v5h5M9 13h6M9 17h6',
+  adopt: 'M3 17l6-6 4 4 8-8M15 7h6v6',
   score: 'M12 3v18M5 8h14M7 13h10M9 18h6',
   talk: 'M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12Z',
   stress: 'M12 3 2 20h20L12 3Zm0 6v5m0 3.5v.5',

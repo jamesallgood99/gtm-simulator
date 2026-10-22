@@ -3,21 +3,28 @@ import CompareView from './components/CompareView.jsx';
 import ScoreView from './components/ScoreView.jsx';
 import TalkView from './components/TalkView.jsx';
 import StressView from './components/StressView.jsx';
+import AdoptionView from './components/AdoptionView.jsx';
+import DocumentsView from './components/DocumentsView.jsx';
 import { MarketView, PersonasView } from './components/MarketView.jsx';
 import { SettingsDialog, CampaignDialog } from './components/Dialogs.jsx';
 import { Icon } from './components/ui.jsx';
 import { analyze } from './lib/analysis.js';
 import { stratifiedSample } from './lib/stats.js';
-import { runScore, runStress, runTalk, resultsToCsv, parseCsv } from './lib/simulate.js';
+import { runScore, runStress, runTalk, runExtract, runMessages, runAdoption, resultsToCsv, parseCsv } from './lib/simulate.js';
+import { readDocument, pastedDocument } from './lib/docs.js';
 
 const REPO_URL = 'https://github.com/jamesallgood/synthetic-market-simulator';
 
 const NAV = [
+  { group: 'Start', items: [
+    { id: 'documents', label: 'Documents', hint: 'start here', icon: 'docs' },
+  ] },
   { group: 'Simulate', items: [
     { id: 'compare', label: 'Compare', hint: 'A vs B', icon: 'compare' },
     { id: 'score', label: 'Score', hint: 'one message', icon: 'score' },
     { id: 'talk', label: 'Talk', hint: 'one persona', icon: 'talk' },
     { id: 'stress', label: 'Stress', hint: 'weakest claim', icon: 'stress' },
+    { id: 'adoption', label: 'Adoption', hint: 'features', icon: 'adopt' },
   ] },
   { group: 'Market', items: [
     { id: 'market', label: 'Segments', icon: 'market' },
@@ -64,7 +71,12 @@ export default function App() {
   const [loadError, setLoadError] = useState('');
   const [demo, setDemo] = useState(null);
   const [settings, setSettings] = useState(loadSettings);
-  const [view, setView] = useState('compare');
+  const [view, setView] = useState('documents');
+  const [docs, setDocs] = useState([]);
+  const [sampleDocs, setSampleDocs] = useState(false);
+  const [brief, setBrief] = useState(null);
+  const [adoption, setAdoption] = useState(null);
+  const [stressSeed, setStressSeed] = useState(null);
   const [campaign, setCampaign] = useState(null);
   const [results, setResults] = useState({});
   const [source, setSource] = useState('demo');
@@ -93,6 +105,18 @@ export default function App() {
         setStress(d.stress);
         setTranscripts({ [d.talk.persona_id]: d.talk.transcript });
         setTalkPersona(d.talk.persona_id);
+        setBrief({ ...d.brief, source_count: d.documents?.length });
+        setAdoption(d.adoption ?? null);
+        if (d.documents?.length) {
+          Promise.all(d.documents.map((doc) => fetch(`./${doc.path}`).then((r) => (r.ok ? r.text() : '')).catch(() => '')))
+            .then((texts) => {
+              setDocs(d.documents.map((doc, i) => ({
+                id: doc.path, name: doc.name, type: doc.type, kind: 'Markdown', text: texts[i],
+                words: (texts[i].match(/\S+/g) ?? []).length,
+              })));
+              setSampleDocs(true);
+            });
+        }
       } else {
         setCampaign({ name: 'New campaign', product: '', variants: [{ id: 'A', name: 'Variant A', headline: '', message: '', focus: '' }] });
       }
@@ -177,7 +201,7 @@ export default function App() {
 
   const runStressTest = async (claim, critics) => {
     if (!live) {
-      if (demo && claim === demo.stress.claim) { setStress(demo.stress); return; }
+      if (demo && claim === demo.stress.claim && sampleDocs) { setStress(demo.stress); return; }
       return needKey();
     }
     setBusy(true);
@@ -214,12 +238,108 @@ export default function App() {
 
   const openTalk = (id) => { setTalkPersona(id); setView('talk'); };
 
+  // ---- Documents ----
+  const addFiles = async (files) => {
+    setError('');
+    const read = [];
+    const problems = [];
+    for (const f of files) {
+      try { read.push(await readDocument(f)); } catch (e) { problems.push(e.message); }
+    }
+    if (read.length) {
+      setDocs((prev) => {
+        const base = sampleDocs ? [] : prev;
+        const ids = new Set(base.map((d) => d.id));
+        return [...base, ...read.filter((d) => !ids.has(d.id))];
+      });
+      if (sampleDocs) { setSampleDocs(false); setBrief(null); }
+    }
+    if (problems.length) setError(problems.join(' '));
+  };
+  const addPasted = (name, text, type) => {
+    const doc = pastedDocument(name, text, type);
+    setDocs((prev) => [...(sampleDocs ? [] : prev), doc]);
+    if (sampleDocs) { setSampleDocs(false); setBrief(null); }
+  };
+
+  const writeMessaging = async (b, ctrl) => {
+    setProgress({ done: 1, total: 2, label: 'Writing message directions from the brief' });
+    const variants = await runMessages({ settings, market, brief: b, signal: ctrl.signal });
+    if (!variants.length) throw new Error('Claude returned no message directions. Try again.');
+    setCampaign((c) => ({ ...c, name: `${b.product_name} launch`, product: b.summary, variants }));
+    setResults({});
+    setSource('live');
+  };
+
+  const analyzeDocs = async () => {
+    if (!live) return needKey();
+    setError('');
+    setBusy(true);
+    const ctrl = new AbortController();
+    abortRef.current = ctrl;
+    try {
+      setProgress({ done: 0, total: 2, label: `Reading ${docs.length} document${docs.length > 1 ? 's' : ''}` });
+      const b = { ...(await runExtract({ settings, market, docs, signal: ctrl.signal })), source_count: docs.length };
+      setBrief(b);
+      setAdoption(null);
+      setStress(null);
+      setStressSeed(null);
+      await writeMessaging(b, ctrl);
+    } catch (e) {
+      if (e.name !== 'AbortError') setError(e.message);
+    } finally {
+      setBusy(false);
+      setProgress(null);
+    }
+  };
+
+  const rewriteMessaging = async () => {
+    if (!live) return needKey();
+    setError('');
+    setBusy(true);
+    const ctrl = new AbortController();
+    abortRef.current = ctrl;
+    try { await writeMessaging(brief, ctrl); } catch (e) { if (e.name !== 'AbortError') setError(e.message); } finally { setBusy(false); setProgress(null); }
+  };
+
+  const runAdopt = async () => {
+    if (!live) return needKey();
+    setError('');
+    setBusy(true);
+    const ctrl = new AbortController();
+    abortRef.current = ctrl;
+    try {
+      const sample = stratifiedSample(market.personas, Math.min(settings.sampleSize, 50), market.roles, 5);
+      setProgress({ done: 0, total: 1, label: `Testing ${brief.features.length} features with ${sample.length} personas` });
+      setAdoption(await runAdoption({
+        settings, market, product: brief.summary, features: brief.features, sample, signal: ctrl.signal,
+        onProgress: (done, total) => setProgress((p) => ({ ...p, done, total })),
+      }));
+    } catch (e) {
+      if (e.name !== 'AbortError') setError(e.message);
+    } finally {
+      setBusy(false);
+      setProgress(null);
+    }
+  };
+
+  const stressClaim = (c) => {
+    setStressSeed({ claim: c.text, theme: c.theme, key: Date.now() });
+    setStress((prev) => (prev?.claim === c.text ? prev : sampleDocs && demo?.stress.claim === c.text ? demo.stress : null));
+    setView('stress');
+  };
+  const weakestClaim = brief?.claims?.length ? [...brief.claims].sort((a, b) => a.proof_strength - b.proof_strength)[0] : null;
+
   if (loadError) return <div className="main"><div className="banner error">{loadError}</div></div>;
   if (!market || !campaign) return <div className="main"><p className="note">Loading the market…</p></div>;
 
   const variantCount = campaign.variants.length;
   const heads = {
-    compare: [`Campaign simulation: ${campaign.name}`, `Testing ${variantCount} message variation${variantCount > 1 ? 's' : ''} against ${sampleSize} AI personas from ${market.market_name.toLowerCase()}.`],
+    documents: ['Start with your documents', 'Upload the PRDs, MRDs and creative briefs for a launch. Claude reads them, pulls out the features and claims, and writes the messaging the market will test.'],
+    adoption: ['Adoption', 'How each persona takes to each feature in the PRD, 90 days after launch and a year in.'],
+    compare: [`Campaign simulation: ${campaign.name}`, analysis
+      ? `Testing ${variantCount} message variation${variantCount > 1 ? 's' : ''} against ${sampleSize} AI personas from ${market.market_name.toLowerCase()}.`
+      : `${variantCount} message variation${variantCount > 1 ? 's' : ''} ready to test against ${market.market_name.toLowerCase()}.`],
     score: ['Score', 'Run one message past the market and read it by segment.'],
     talk: ['Talk', 'Interview one persona and let them push back on your pitch.'],
     stress: ['Stress', 'Point your toughest critics at your weakest claim.'],
@@ -313,13 +433,32 @@ export default function App() {
           )}
         </header>
 
-        {view === 'compare' && <CompareView campaign={campaign} analysis={analysis} sampleSize={sampleSize} onTalk={openTalk} />}
+        {view === 'compare' && <CompareView campaign={campaign} analysis={analysis} sampleSize={sampleSize} onTalk={openTalk} onRun={() => simulate(campaign)} live={live} busy={busy} />}
         {view === 'score' && <ScoreView market={market} analysis={analysis} live={live} busy={busy} onScoreNew={scoreNew} onTalk={openTalk} />}
         {view === 'talk' && (
           <TalkView market={market} analysis={analysis} live={live} busy={busy} personaId={talkPersona}
             onSelect={setTalkPersona} transcripts={transcripts} onSend={sendTalk} />
         )}
-        {view === 'stress' && <StressView market={market} live={live} busy={busy} result={stress} defaultClaim={demo?.stress.claim} onRun={runStressTest} />}
+        {view === 'documents' && (
+          <DocumentsView
+            market={market} docs={docs} sampleDocs={sampleDocs} brief={brief} campaign={campaign} live={live} busy={busy}
+            hasResults={Boolean(analysis)}
+            onFiles={addFiles} onPaste={addPasted}
+            onRemove={(id) => setDocs((d) => d.filter((x) => x.id !== id))}
+            onSetType={(id, type) => setDocs((d) => d.map((x) => (x.id === id ? { ...x, type } : x)))}
+            onAnalyze={analyzeDocs} onRewrite={rewriteMessaging} onGo={setView} onStressClaim={stressClaim}
+          />
+        )}
+        {view === 'stress' && (
+          <StressView
+            key={stressSeed?.key ?? 'default'}
+            market={market} live={live} busy={busy} result={stress}
+            defaultClaim={stressSeed?.claim ?? weakestClaim?.text ?? demo?.stress.claim}
+            defaultTheme={stressSeed?.theme ?? weakestClaim?.theme}
+            onRun={runStressTest}
+          />
+        )}
+        {view === 'adoption' && <AdoptionView market={market} brief={brief} adoption={adoption} live={live} busy={busy} onRun={runAdopt} onGo={setView} onTalk={openTalk} />}
         {view === 'market' && <MarketView market={market} />}
         {view === 'personas' && <PersonasView market={market} onTalk={openTalk} />}
       </main>

@@ -1,5 +1,9 @@
 import { callClaude, toolInput, pool, text } from './anthropic.js';
-import { scoreSystem, scoreUser, SCORE_TOOL, stressSystem, stressUser, STRESS_TOOL, talkSystem } from './prompts.js';
+import {
+  scoreSystem, scoreUser, SCORE_TOOL, stressSystem, stressUser, STRESS_TOOL, talkSystem,
+  extractSystem, EXTRACT_TOOL, docsUserContent, messagesSystem, messagesUser, MESSAGES_TOOL,
+  adoptSystem, adoptUser, ADOPT_TOOL,
+} from './prompts.js';
 
 const BATCH = 20;
 
@@ -63,6 +67,78 @@ export async function runTalk({ settings, market, product, persona, transcript, 
     signal,
   });
   return text(res);
+}
+
+/** Read the uploaded documents and pull out features, claims and creative guardrails. */
+export async function runExtract({ settings, market, docs, signal }) {
+  const res = await callClaude({
+    apiKey: settings.apiKey,
+    model: settings.model,
+    system: extractSystem(market),
+    messages: [{ role: 'user', content: docsUserContent(docs) }],
+    tools: [EXTRACT_TOOL],
+    toolChoice: { type: 'tool', name: EXTRACT_TOOL.name },
+    maxTokens: 8000,
+    signal,
+  });
+  const brief = toolInput(res, EXTRACT_TOOL.name);
+  const roleKeys = new Set(market.roles.map((r) => r.key));
+  brief.features = (brief.features ?? []).map((f, i) => ({
+    ...f,
+    id: f.id || `F${i + 1}`,
+    primary_roles: (f.primary_roles ?? []).filter((r) => roleKeys.has(r)),
+    themes: f.themes ?? [],
+  }));
+  brief.claims = (brief.claims ?? []).map((c, i) => ({ ...c, id: c.id || `K${i + 1}` }));
+  return brief;
+}
+
+/** Write message directions from the brief. Returns campaign variants. */
+export async function runMessages({ settings, market, brief, count = 3, signal }) {
+  const res = await callClaude({
+    apiKey: settings.apiKey,
+    model: settings.model,
+    system: messagesSystem(market),
+    messages: [{ role: 'user', content: messagesUser(brief, count) }],
+    tools: [MESSAGES_TOOL],
+    toolChoice: { type: 'tool', name: MESSAGES_TOOL.name },
+    maxTokens: 3000,
+    signal,
+  });
+  return (toolInput(res, MESSAGES_TOOL.name).variants ?? []).slice(0, 4).map((v, i) => ({
+    ...v,
+    id: String.fromCharCode(65 + i),
+    name: `Variant ${String.fromCharCode(65 + i)}`,
+  }));
+}
+
+const ADOPT_BATCH = 5;
+
+/** Every persona in the sample against every feature. */
+export async function runAdoption({ settings, product, features, sample, market, onProgress, signal }) {
+  const batches = [];
+  for (let i = 0; i < sample.length; i += ADOPT_BATCH) batches.push(sample.slice(i, i + ADOPT_BATCH));
+  let done = 0;
+  const fids = new Set(features.map((f) => f.id));
+  const clamp = (x) => Math.max(0, Math.min(100, Math.round(Number(x))));
+  const jobs = batches.map((batch) => async () => {
+    const res = await callClaude({
+      apiKey: settings.apiKey,
+      model: settings.model,
+      system: adoptSystem(market),
+      messages: [{ role: 'user', content: adoptUser({ product, features, personas: batch }) }],
+      tools: [ADOPT_TOOL],
+      toolChoice: { type: 'tool', name: ADOPT_TOOL.name },
+      maxTokens: 8000,
+      signal,
+    });
+    const ids = new Set(batch.map((p) => p.id));
+    return (toolInput(res, ADOPT_TOOL.name).rows ?? [])
+      .filter((r) => ids.has(r.persona_id) && fids.has(r.feature_id))
+      .map((r) => ({ ...r, enthusiasm: clamp(r.enthusiasm), adopt_90d: clamp(r.adopt_90d), adopt_12m: clamp(r.adopt_12m) }));
+  });
+  const out = await pool(jobs, settings.concurrency ?? 3, () => onProgress?.(++done, batches.length));
+  return { sample_ids: sample.map((p) => p.id), rows: out.flat() };
 }
 
 // ---- CSV import/export so runs from the Claude skill and the dashboard are interchangeable ----

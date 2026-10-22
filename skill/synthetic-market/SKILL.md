@@ -1,6 +1,6 @@
 ---
 name: synthetic-market
-description: Pressure-test positioning, messaging, pricing or feature ideas against a synthetic market of AI personas before anything ships. Use when the user wants to score a message or page, interview a persona, stress-test a claim, or compare versions A/B/C against their market file (market.json or personas.csv).
+description: Pressure-test a launch against a synthetic market of AI personas before anything ships. Use when the user shares PRDs, MRDs or creative briefs to turn into messaging, or wants to score a message, interview a persona, stress-test a claim, compare versions A/B/C, or test feature adoption against their market file (market.json or personas.csv).
 ---
 
 # Synthetic market simulator
@@ -41,6 +41,28 @@ Ground every reaction in those fields. A persona reacts to the message through t
 not through a generic buyer lens. A broker who wants to differentiate in a commodity market hears a
 message very differently from a CFO who wants a lower premium. A persona's `trigger` (what's
 happening at their company) and `context` (what their role cares about) matter more than their title.
+
+## Start from the documents
+
+When the user shares PRDs, MRDs, creative briefs or similar, read all of them before anything else
+and write down the brief:
+
+- **Product**: name, a two or three sentence summary, the customer, the proposition, the tone.
+- **Features** (F1, F2…): one sentence each, the roles who use it day to day, theme tags, and setup
+  effort for the customer (low, medium, high).
+- **Claims** (K1, K2…): the claim, the proof the documents give, and proof strength 1–5 (1 no proof,
+  2 anecdote or in progress, 3 small pilot or internal analysis, 4 measured across most deployments,
+  5 independent or large-sample evidence).
+- **Mandatories**: every rule the creative brief sets.
+
+Take only what the documents say. Show the brief to the user and ask them to correct it before
+simulating, because every later step is built on it.
+
+Then write three message directions from the brief. Use the brief's directions if it names them,
+otherwise aim each at a different buying role. Each is a headline plus one or two sentences, under 40
+words. Use no claim with proof strength 1 or 2 as a fact, and follow every mandatory. For each
+direction, list the features and claims it draws on and the mandatories it checks. These become the
+variants for Compare, and the weakest claim becomes the first target for Stress.
 
 ## Modes
 
@@ -85,6 +107,22 @@ Input: a positioning statement, headline, pricing page, feature description or e
    If the winner loses a segment that holds a veto (finance, IT, the broker), say so plainly. That
    may change the recommendation.
 
+### Adopt: features against personas
+Input: the feature list from the brief (or a PRD the user shares).
+1. Take a stratified sample of 50 personas (10 per role). Work in batches of five personas, with
+   every feature in each batch.
+2. For every persona and feature, record enthusiasm (0–100), the chance they are actively using it
+   at 90 days, the chance at 12 months, and one sentence in their voice. For a feature a role
+   wouldn't use day to day, adoption means actively backing it: approving, sponsoring, expecting it in
+   their reports.
+3. Think about the gap between 90 days and 12 months. Novelty fades: training content and anything
+   that needs a new habit. Value that compounds grows: dashboards that need history, reports that
+   matter at renewal. Setup effort and change fatigue slow early adoption. Distrust caps both.
+4. Report a feature × role table of average enthusiasm, then each feature's 90-day and 12-month
+   adoption by role, then what stands out: the strongest pull, the feature that splits the buying
+   group (a champion loves it and a role with a veto doesn't), what fades, what grows, and any
+   feature no role is enthusiastic about.
+
 ## Output discipline
 
 - Numbers come with their sample size: "CFOs 38 (n=10)".
@@ -95,3 +133,5 @@ Input: a positioning statement, headline, pricing page, feature description or e
 - If the user wants the numbers as a file, write a CSV with one row per persona per variant:
   `persona_id, role, industry, size_band, pain_level, variant, score, confidence, reaction, objection`.
   The dashboard in this repo can import it.
+- For adoption, write one row per persona per feature:
+  `persona_id, feature_id, enthusiasm, adopt_90d, adopt_12m, note`.

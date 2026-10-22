@@ -78,9 +78,21 @@ function Recommendation({ analysis }) {
   );
 }
 
-export default function CompareView({ campaign, analysis, sampleSize, onTalk }) {
+export default function CompareView({ campaign, analysis, sampleSize, onTalk, onRun, live, busy }) {
   const [quoteVariant, setQuoteVariant] = useState(null);
-  if (!analysis) return <div className="panel empty">No results yet. Edit the campaign and run a simulation.</div>;
+  if (!analysis) {
+    return (
+      <>
+        <VariantCards variants={campaign.variants} />
+        <div className="panel empty" style={{ marginTop: 16 }}>
+          <p>These messages haven't met the market yet.</p>
+          <p style={{ marginTop: 12 }}>
+            <button className="btn primary" disabled={busy} onClick={onRun}><Icon name="play" />{live ? 'Run simulation' : 'Add an API key to run'}</button>
+          </p>
+        </div>
+      </>
+    );
+  }
   const { perVariant, winner, personasById } = analysis;
   const selected = perVariant.find((pv) => pv.variant.id === quoteVariant) ?? winner;
   const quotes = pickQuotes(selected.rows, personasById);
