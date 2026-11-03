@@ -21,7 +21,7 @@ ships faster than marketing can fit releases into the schedule, there's no room 
 when product cycles get shorter, there are more blind spots and more market-fit misses. The
 simulator was one piece of an AI-native marketing stack built to keep up.
 
-The sample market here is fictional. No CompScience data is in this repo.
+The sample market here is fictional. No real data is in this repo.
 
 ## What it is
 
