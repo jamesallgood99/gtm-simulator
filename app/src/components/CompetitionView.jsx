@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { Avatar, Icon, PainChip, scoreTint, variantVars, pct, r0 } from './ui.jsx';
 import { OURS, pairedQuotes } from '../lib/competition.js';
+import PersonaPicker from './PersonaPicker.jsx';
 
 const plural = (label) => {
   const first = label.split(' ')[0];
@@ -143,14 +144,24 @@ function PairCard({ q, brand, ourName, onTalk }) {
   );
 }
 
-function HeadToHead({ x, analysis, market, rival, setRival, onTalk }) {
+function HeadToHead({ x, analysis, market, rival, setRival, onTalk, picked, setPicked }) {
   const { brands, roleLabel, personasById, ourName } = analysis;
   const rivals = brands.slice(1).filter((b) => x.cells[b.id]?.scored);
   const brand = rivals.find((b) => b.id === rival) ?? rivals[0];
   const ours = x.cells[OURS];
+  const pairs = useMemo(() => {
+    if (!brand || !ours?.scored) return [];
+    const theirs = new Map(x.cells[brand.id].rows.map((r) => [r.persona_id, r]));
+    return ours.rows.filter((o) => theirs.has(o.persona_id) && personasById[o.persona_id]).map((o) => {
+      const t = theirs.get(o.persona_id);
+      return { p: personasById[o.persona_id], ours: o, theirs: t, d: t.score - o.score };
+    });
+  }, [x, brand, ours, personasById]);
   const quotes = useMemo(
-    () => (brand && ours?.scored ? pairedQuotes(ours.rows, x.cells[brand.id].rows, personasById, x.main) : []),
-    [x, brand, ours, personasById],
+    () => (picked
+      ? picked.map((id) => pairs.find((q) => q.p.id === id)).filter(Boolean)
+      : brand && ours?.scored ? pairedQuotes(ours.rows, x.cells[brand.id].rows, personasById, x.main) : []),
+    [picked, pairs, x, brand, ours, personasById],
   );
 
   if (!ours?.scored) return <div className="panel empty">Run the head-to-head to score this feature.</div>;
@@ -199,6 +210,11 @@ function HeadToHead({ x, analysis, market, rival, setRival, onTalk }) {
           <h2>Same persona, both messages</h2>
           <p>Where {brand.name} pulls furthest ahead, and where we do.</p>
         </div>
+        <PersonaPicker
+          candidates={pairs.map((q) => ({ p: q.p, score: q.theirs.score }))}
+          roles={market.roles} picked={picked} onChange={setPicked}
+          suggestedNote={`Suggested: the two personas ${brand.name} wins most clearly and the two we win most clearly. Scores in the list are for ${brand.name}'s message.`}
+        />
         <div className="quotes">
           {quotes.map((q) => <PairCard key={q.p.id} q={q} brand={brand} ourName={analysis.ourName} onTalk={onTalk} />)}
         </div>
@@ -227,6 +243,7 @@ function MsgCard({ brand, cell, message, lead }) {
 export default function CompetitionView({ market, brief, comp, analysis, live, busy, cost, onRun, onEdit, onGo, onTalk }) {
   const [scope, setScope] = useState('main');
   const [sel, setSel] = useState({ fid: null, rival: null });
+  const [picked, setPicked] = useState(null);
 
   if (!brief?.features?.length) {
     return (
@@ -307,7 +324,7 @@ export default function CompetitionView({ market, brief, comp, analysis, live, b
                 <h2>{x.f.name}</h2>
                 <p>{x.f.description}</p>
               </div>
-              <HeadToHead key={x.f.id} x={x} analysis={analysis} market={market} rival={sel.rival} setRival={(r) => setSel({ fid, rival: r })} onTalk={onTalk} />
+              <HeadToHead key={x.f.id} x={x} analysis={analysis} market={market} rival={sel.rival} setRival={(r) => setSel({ fid, rival: r })} onTalk={onTalk} picked={picked} setPicked={setPicked} />
             </section>
           )}
 

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { DistCard } from './CompareView.jsx';
 import { QuoteCard } from './Quotes.jsx';
+import PersonaPicker from './PersonaPicker.jsx';
 import { variantVars } from './ui.jsx';
 import { bySegment, mean, PAIN_ORDER } from '../lib/stats.js';
 import { topObjections } from '../lib/analysis.js';
@@ -34,6 +35,7 @@ export default function ScoreView({ market, analysis, live, busy, onScoreNew, on
   const [vid, setVid] = useState(null);
   const [roleFilter, setRoleFilter] = useState('all');
   const [draft, setDraft] = useState('');
+  const [picked, setPicked] = useState(null);
   if (!analysis) return <div className="panel empty">No results yet.</div>;
   const { perVariant, personasById, roleLabel } = analysis;
   const pv = perVariant.find((x) => x.variant.id === vid) ?? perVariant[0];
@@ -44,6 +46,7 @@ export default function ScoreView({ market, analysis, live, busy, onScoreNew, on
     .filter((r) => roleFilter === 'all' || r.p.role === roleFilter)
     .sort((a, b) => b.score - a.score);
   const shown = filtered.length > 6 ? [...filtered.slice(0, 3), ...filtered.slice(-3)] : filtered;
+  const pickedRows = (picked ?? []).map((id) => enriched.find((r) => r.persona_id === id)).filter(Boolean);
 
   return (
     <>
@@ -97,17 +100,19 @@ export default function ScoreView({ market, analysis, live, busy, onScoreNew, on
       <section className="section">
         <div className="section-head">
           <h2>Strongest and weakest reactions</h2>
-          <select value={roleFilter} onChange={(e) => setRoleFilter(e.target.value)} style={{ width: 'auto' }} aria-label="Filter by role">
+          {!picked && <select value={roleFilter} onChange={(e) => setRoleFilter(e.target.value)} style={{ width: 'auto' }} aria-label="Filter by role">
             <option value="all">All roles</option>
             {market.roles.map((r) => <option key={r.key} value={r.key}>{r.label}</option>)}
-          </select>
+          </select>}
         </div>
+        <PersonaPicker
+          candidates={pv.rows.filter((r) => personasById[r.persona_id]).map((r) => ({ p: personasById[r.persona_id], score: r.score }))}
+          roles={market.roles} picked={picked} onChange={setPicked}
+          suggestedNote={`Showing the three highest and three lowest of ${filtered.length}. Average ${Math.round(mean(filtered.map((r) => r.score)) || 0)}.`}
+        />
         <div className="quotes">
-          {shown.map((r) => <QuoteCard key={r.persona_id} r={r} onTalk={onTalk} />)}
+          {(picked ? pickedRows : shown).map((r) => <QuoteCard key={r.persona_id} r={r} onTalk={onTalk} />)}
         </div>
-        <p className="note" style={{ marginTop: 8 }}>
-          Showing the three highest and three lowest of {filtered.length}. Average {Math.round(mean(filtered.map((r) => r.score)) || 0)}.
-        </p>
       </section>
     </>
   );

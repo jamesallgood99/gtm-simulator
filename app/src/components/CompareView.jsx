@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Histogram from './Histogram.jsx';
 import SegmentMatrix from './SegmentMatrix.jsx';
 import Quotes from './Quotes.jsx';
+import PersonaPicker from './PersonaPicker.jsx';
 import { Icon, variantVars, variantColor, pct, r0 } from './ui.jsx';
 import { pickQuotes } from '../lib/analysis.js';
 
@@ -80,6 +81,7 @@ function Recommendation({ analysis }) {
 
 export default function CompareView({ campaign, analysis, sampleSize, onTalk, onRun, live, busy }) {
   const [quoteVariant, setQuoteVariant] = useState(null);
+  const [picked, setPicked] = useState(null);
   if (!analysis) {
     return (
       <>
@@ -95,7 +97,10 @@ export default function CompareView({ campaign, analysis, sampleSize, onTalk, on
   }
   const { perVariant, winner, personasById } = analysis;
   const selected = perVariant.find((pv) => pv.variant.id === quoteVariant) ?? winner;
-  const quotes = pickQuotes(selected.rows, personasById);
+  const quotes = picked
+    ? picked.map((id) => selected.rows.find((r) => r.persona_id === id)).filter((r) => r && personasById[r.persona_id]).map((r) => ({ ...r, p: personasById[r.persona_id] }))
+    : pickQuotes(selected.rows, personasById);
+  const roles = Object.entries(analysis.roleLabel).map(([key, label]) => ({ key, label }));
   const multi = perVariant.length > 1;
 
   return (
@@ -133,6 +138,11 @@ export default function CompareView({ campaign, analysis, sampleSize, onTalk, on
             </div>
           )}
         </div>
+        <PersonaPicker
+          candidates={selected.rows.filter((r) => personasById[r.persona_id]).map((r) => ({ p: personasById[r.persona_id], score: r.score }))}
+          roles={roles} picked={picked} onChange={setPicked}
+          suggestedNote="Suggested: one from each pain level, plus the harshest critic. Your picks stay when you switch variants."
+        />
         <Quotes quotes={quotes} onTalk={onTalk} />
       </section>
 
