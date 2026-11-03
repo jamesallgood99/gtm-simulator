@@ -58,7 +58,6 @@ export default function SegmentMatrix({ analysis }) {
                               title={flag ? `The leader trails ${perVariant[row.bestIdx].variant.name} by ${Math.round(row.loss)} points here` : `${Math.round(cell.mean)} average across ${cell.n} personas`}
                             >
                               {Math.round(cell.mean)}
-                              {flag && <span className="delta">−{Math.round(row.loss)}</span>}
                             </div>
                           ) : <div className="cell-inner">–</div>}
                         </td>

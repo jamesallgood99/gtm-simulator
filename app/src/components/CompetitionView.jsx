@@ -8,17 +8,14 @@ const plural = (label) => {
   return `${base}s`;
 };
 
-function Delta({ h, scope }) {
-  const diff = scope === 'main' ? h.diffMain : h.diffAll;
-  const v = scope === 'main' ? h.verdict : h.verdictAll;
-  if (!diff) return null;
-  const d = r0(diff.mean);
-  if (v === 'tie') return <span className="h2h-delta tie" title={`Within ${r0(Math.abs(diff.ci[0]))}–${r0(Math.abs(diff.ci[1]))} points either way: not a real difference`}>tie</span>;
-  return (
-    <span className={`h2h-delta ${v}`} title={`80% range ${r0(diff.ci[0])} to ${r0(diff.ci[1])} points vs. our message`}>
-      {d > 0 ? `+${d}` : `−${Math.abs(d)}`}
-    </span>
-  );
+/** Tooltip text for a competitor cell: the gap stays one hover away instead of on the page. */
+function gapTitle(b, x, score, h, scope) {
+  const diff = h && (scope === 'main' ? h.diffMain : h.diffAll);
+  const v = h && (scope === 'main' ? h.verdict : h.verdictAll);
+  const base = `${b.name}, ${x.f.name}: ${r0(score)} average`;
+  if (!diff) return base;
+  if (v === 'tie') return `${base}. A tie with our message.`;
+  return `${base}, ${r0(Math.abs(diff.mean))} points ${diff.mean > 0 ? 'ahead of' : 'behind'} our message.`;
 }
 
 function Scoreboard({ analysis, scope, setScope, selected, onSelect }) {
@@ -26,7 +23,7 @@ function Scoreboard({ analysis, scope, setScope, selected, onSelect }) {
   return (
     <div className="panel">
       <div className="row" style={{ justifyContent: 'space-between', marginBottom: 10 }}>
-        <p className="note">Average interest, 0–100. The badge is the competitor's score minus ours, from the same personas reading both.</p>
+        <p className="note">Average interest, 0–100, from the same personas reading every message. Hover a score for the gap against ours.</p>
         <div className="tabs" role="tablist" aria-label="Score among">
           <button role="tab" aria-selected={scope === 'main'} onClick={() => setScope('main')}>Main personas</button>
           <button role="tab" aria-selected={scope === 'all'} onClick={() => setScope('all')}>All roles</button>
@@ -68,10 +65,9 @@ function Scoreboard({ analysis, scope, setScope, selected, onSelect }) {
                         className={`cell-inner cell-btn ${h?.[scope === 'main' ? 'verdict' : 'verdictAll'] === 'loss' ? 'flag' : ''}`}
                         style={scoreTint(score)}
                         onClick={() => onSelect(x.f.id, b.id === OURS ? null : b.id)}
-                        title={`${b.name}, ${x.f.name}: ${r0(score)} average`}
+                        title={gapTitle(b, x, score, h, scope)}
                       >
                         {r0(score)}
-                        {h && <Delta h={h} scope={scope} />}
                       </button>
                     </td>
                   );
@@ -82,9 +78,7 @@ function Scoreboard({ analysis, scope, setScope, selected, onSelect }) {
         </table>
       </div>
       <div className="matrix-legend">
-        <span><span className="h2h-delta loss">+5</span> They beat our message</span>
-        <span><span className="h2h-delta win">−5</span> We beat theirs</span>
-        <span><span className="h2h-delta tie">tie</span> Gap too small or too uncertain to call</span>
+        <span><span className="swatch" style={{ boxShadow: 'inset 0 0 0 2px var(--flag)' }} />They beat our message</span>
         <span>Main personas are the roles the PRD built the feature for</span>
       </div>
     </div>
@@ -114,7 +108,7 @@ function RoleBars({ x, brand, ours, them, roleLabel, roles }) {
               <span className="rb-mid" />
               <span className={`rb-bar ${side}`} style={d >= 0 ? { left: '50%', width: `${w}%`, ...variantVars(brand.index) } : { right: '50%', width: `${w}%`, ...variantVars(0) }} />
             </div>
-            <div className={`rb-vals ${side}`}><b>{r0(o)}</b> · <b>{r0(t)}</b><span>{Math.abs(d) < 0.5 ? 'even' : d > 0 ? `+${r0(d)}` : `−${r0(-d)}`}</span></div>
+            <div className={`rb-vals ${side}`}><b>{r0(o)}</b> · <b>{r0(t)}</b></div>
           </div>
         );
       })}
@@ -142,8 +136,7 @@ function PairCard({ q, brand, ourName, onTalk }) {
         <div className="pair-head"><span>{brand.name}</span><b>{q.theirs.score}</b></div>
         <blockquote>“{q.theirs.reaction}”</blockquote>
       </div>
-      <div className="row" style={{ justifyContent: 'space-between' }}>
-        <span className="score">{theyWin ? `${brand.name} +${q.d}` : `${ourName} +${-q.d}`}</span>
+      <div className="row" style={{ justifyContent: 'flex-end' }}>
         <button className="toggle-link" onClick={() => onTalk(p.id)}>Talk to {p.name.split(' ')[0]}</button>
       </div>
     </figure>
