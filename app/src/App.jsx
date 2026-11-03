@@ -26,11 +26,11 @@ const NAV = [
   ] },
   { group: 'Simulate', items: [
     { id: 'compare', label: 'Compare', hint: 'A vs B', icon: 'compare' },
-    { id: 'competition', label: 'Competition', hint: 'us vs. them', icon: 'rival' },
     { id: 'score', label: 'Score', hint: 'one message', icon: 'score' },
     { id: 'talk', label: 'Talk', hint: 'one persona', icon: 'talk' },
     { id: 'stress', label: 'Stress', hint: 'weakest claim', icon: 'stress' },
     { id: 'adoption', label: 'Adoption', hint: 'features', icon: 'adopt' },
+    { id: 'competition', label: 'Competition', hint: 'us vs. them', icon: 'rival' },
   ] },
   { group: 'Market', items: [
     { id: 'market', label: 'Segments', icon: 'market' },
