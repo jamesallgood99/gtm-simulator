@@ -17,6 +17,7 @@ const ICONS = {
   upload: 'M12 16V5m0 0-4 4m4-4 4 4M4 20h16',
   star: 'M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9L12 3Z',
   send: 'M4 12 20 4l-6 16-3-7-7-1Z',
+  rival: 'M5 4h5v5H5zM14 15h5v5h-5zM10 6.5h3a2 2 0 0 1 2 2V15M14 17.5h-3a2 2 0 0 1-2-2V9',
   github: 'M9 19c-4 1.3-4-2-6-2.5m12 5v-3.5a3 3 0 0 0-.9-2.4c3-.3 6-1.5 6-6.6a5.2 5.2 0 0 0-1.4-3.6 4.8 4.8 0 0 0-.1-3.6s-1.1-.3-3.6 1.4a12.4 12.4 0 0 0-6.5 0C6 .8 4.9 1.1 4.9 1.1a4.8 4.8 0 0 0-.1 3.6 5.2 5.2 0 0 0-1.4 3.6c0 5.1 3 6.3 6 6.6a3 3 0 0 0-.9 2.4V22',
 };
 
@@ -42,7 +43,7 @@ export function PainChip({ level }) {
   return <span className={`chip ${level}`}>{level} pain</span>;
 }
 
-export function Dialog({ title, onClose, children, footer }) {
+export function Dialog({ title, onClose, children, footer, wide }) {
   useEffect(() => {
     const onKey = (e) => e.key === 'Escape' && onClose();
     window.addEventListener('keydown', onKey);
@@ -50,7 +51,7 @@ export function Dialog({ title, onClose, children, footer }) {
   }, [onClose]);
   return (
     <div className="dialog-backdrop" onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
-      <div className="dialog" role="dialog" aria-modal="true" aria-label={title}>
+      <div className={`dialog ${wide ? 'wide' : ''}`} role="dialog" aria-modal="true" aria-label={title}>
         <div className="dialog-head">
           <h2>{title}</h2>
           <button className="btn ghost small" onClick={onClose} aria-label="Close"><Icon name="close" /></button>

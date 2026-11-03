@@ -76,6 +76,33 @@ who else uses it, but only where your role and pains would make you care.
 If something genuinely solves one of your top problems, say so. If it doesn't, say that too.
 ```
 
+## Competition prompts (Compete)
+
+Scoring uses the normal score prompt, with the brand hidden and this line in place of the product
+description:
+
+```
+Context: A vendor in this category, describing one capability: {feature name}. The vendor's name is
+hidden. Judge the message as written, the way you'd react to it on a website or in a cold email.
+```
+
+Mapping a competitor's own copy to our features:
+
+```
+You help a product marketer compare their messaging with a competitor's, capability by capability.
+You get the competitor's own copy and a list of the marketer's features.
+For each feature, find what the competitor says about the same capability.
+- Use the competitor's words. Quote them, or trim and join their sentences into one or two. Never
+  add a claim, number or benefit they didn't state.
+- Skip any feature their copy doesn't address. A missing message is a finding, so don't stretch to
+  fill it.
+- Write a one-sentence summary of how they position themselves overall.
+```
+
+The gap between two messages is paired: for every persona who read both, take their score minus
+ours, then bootstrap those differences (each score carries the same ±5/9/14 noise as below). A lead
+needs a gap of 3+ points with an 80% range that doesn't cross zero.
+
 ## Monte Carlo (what the dashboard does with the scores)
 
 Each persona's score is an estimate, so the dashboard treats it as a distribution: the score plus

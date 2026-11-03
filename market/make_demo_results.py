@@ -502,6 +502,183 @@ adoption = {
     "sample_ids": [p["id"] for p in ADOPT_SAMPLE],
     "rows": [adoption_row(p, f) for p in ADOPT_SAMPLE for f in BRIEF["features"]],
 }
+# ---------------------------------------------------------------------------------------------
+# Competition: the same personas read our message for a feature and each competitor's message for
+# the same feature, blind (brand names removed). Competitors are the fictional rivals from the
+# Competitive Intel Tracker demo (github.com/jamesallgood99/competitive-intel-tracker).
+# Same caveat as above: a transparent heuristic, not model output.
+# ---------------------------------------------------------------------------------------------
+crng = random.Random(23)
+
+COMPETITORS = [
+    {"id": "watchpost", "name": "Watchpost AI",
+     "positioning": "Cloud video analytics for safety teams. Leads with breadth of hazard detection and speed to deploy.",
+     "source": "Sample copy for a fictional competitor"},
+    {"id": "sightwell", "name": "Sightwell",
+     "positioning": "Low-cost, self-serve PPE and restricted-zone alerts. Free on three cameras.",
+     "source": "Sample copy for a fictional competitor"},
+    {"id": "lumenfield", "name": "Lumenfield",
+     "positioning": "Serious-injury-and-fatality prevention for enterprises, with consultants on top of the software.",
+     "source": "Sample copy for a fictional competitor"},
+]
+
+COMP_FEATURES = ["F1", "F2", "F4", "F5", "F6", "F3"]
+
+COMP_MESSAGES = {
+    "F1": {
+        "ours": "Spot unsafe lifts, slips, missing PPE and forklift near-misses on the cameras you already have, and get alerts your safety team can act on the same shift.",
+        "watchpost": "See every hazard on every shift. Watchpost detects more than 40 hazard types, from PPE to vehicle near-misses, and goes live in hours on the cameras you already have.",
+        "sightwell": "PPE compliance on autopilot. Start free on three cameras and get hard hat, vest and restricted-zone alerts the same day.",
+        "lumenfield": "Prevent serious injuries and fatalities. Lumenfield detects the high-energy hazards behind life-changing incidents, on the cameras you already have.",
+    },
+    "F2": {
+        "ours": "Every week, flagged moments become short coaching clips with faces blurred, ready for your toolbox talk. Coaching, never discipline.",
+        "watchpost": "Export any flagged clip in one click and use it in your next safety meeting.",
+        "lumenfield": "Every finding goes to former OSHA and EHS leaders, who build your corrective-action plan with you.",
+    },
+    "F4": {
+        "ours": "Premium, claims, reserves and lost workdays in one view, with ROI tracked against your own baseline.",
+        "lumenfield": "Our cost model puts a dollar figure on every serious-injury precursor you remove, so finance sees exactly what prevention is worth.",
+    },
+    "F5": {
+        "ours": "OSHA 300, 300A and 301 entries drafted from your incident reports, with an audit trail, so recordkeeping takes minutes instead of days.",
+        "lumenfield": "OSHA 300, 300A and 301 logs drafted from every incident and reviewed by our EHS advisors before you file.",
+    },
+    "F6": {
+        "ours": "Faces blurred on site before video leaves the building. Thirty-day retention, SSO and role-based access, and video used for coaching only.",
+        "watchpost": "SOC 2 Type II and ISO 27001. Blurring available on request, and video kept for 90 days so nothing gets lost.",
+        "lumenfield": "Every face blurred at the edge, by default. SOC 2 Type II, with FedRAMP in process for the most sensitive sites.",
+    },
+    "F3": {
+        "ours": "A renewal-ready report of hazard trends and fixes, so you and your broker walk into renewal with evidence the carrier can use.",
+    },
+}
+
+# How each message reads: themes it speaks to, role stakes, proof inside the message (0-1), and how
+# much it raises video-privacy worries (negative = it reassures).
+MSG = {
+    ("ours", "F1"): {"themes": {"safety": 1.0, "compliance": 0.4}, "role": {}, "proof": 0.45, "privacy": 0.5},
+    ("ours", "F2"): {"themes": {"safety": 0.8, "change": 0.2, "relationship": 0.3}, "role": {"worker": 8}, "proof": 0.4, "privacy": 0.1},
+    ("ours", "F3"): {"themes": {"relationship": 1.0, "differentiation": 0.9, "revenue": 0.6, "cost": 0.5}, "role": {}, "proof": 0.4, "privacy": 0.2},
+    ("ours", "F4"): {"themes": {"cost": 1.0, "roi": 1.0}, "role": {}, "proof": 0.45, "privacy": 0.0},
+    ("ours", "F5"): {"themes": {"compliance": 1.0, "admin": 0.8}, "role": {}, "proof": 0.5, "privacy": 0.0},
+    ("ours", "F6"): {"themes": {"privacy": 1.0, "integration": 0.3}, "role": {"it_manager": 4, "worker": 5}, "proof": 0.6, "privacy": -0.6},
+    ("watchpost", "F1"): {"themes": {"safety": 1.0, "compliance": 0.5}, "role": {"safety_manager": 3, "it_manager": -3}, "proof": 0.7, "privacy": 0.6},
+    ("watchpost", "F2"): {"themes": {"safety": 0.5}, "role": {"worker": -10, "safety_manager": -5}, "proof": 0.2, "privacy": 0.5},
+    ("watchpost", "F6"): {"themes": {"privacy": 0.5, "integration": 0.3}, "role": {"it_manager": -2, "worker": -12}, "proof": 0.5, "privacy": 0.35},
+    ("sightwell", "F1"): {"themes": {"safety": 0.6, "compliance": 0.9, "cost": 0.6}, "role": {"cfo": 2, "safety_manager": -8, "it_manager": 3}, "proof": 0.4, "privacy": 0.4},
+    ("lumenfield", "F1"): {"themes": {"safety": 1.0, "compliance": 0.3}, "role": {"safety_manager": 3, "worker": -3, "cfo": 2}, "proof": 0.45, "privacy": 0.35},
+    ("lumenfield", "F2"): {"themes": {"safety": 0.6, "compliance": 0.4}, "role": {"worker": -14, "safety_manager": 1, "cfo": -3}, "proof": 0.5, "privacy": 0.1},
+    ("lumenfield", "F4"): {"themes": {"cost": 1.0, "roi": 1.0, "safety": 0.4}, "role": {"cfo": 6, "safety_manager": -4}, "proof": 0.65, "privacy": 0.0},
+    ("lumenfield", "F5"): {"themes": {"compliance": 1.0, "admin": 0.5}, "role": {"safety_manager": 1}, "proof": 0.55, "privacy": 0.0},
+    ("lumenfield", "F6"): {"themes": {"privacy": 1.0, "integration": 0.4, "compliance": 0.4}, "role": {"it_manager": 12, "worker": -5}, "proof": 0.7, "privacy": -0.55},
+}
+
+# Reactions to competitor copy: (positive, negative, objection) per role.
+COMP_NOTES = {
+    ("watchpost", "F1"): {
+        "broker": ("More hazard types is something I can mention to a carrier.", "Detection counts don't change a renewal.", "No link to claims or renewal"),
+        "cfo": ("Live in hours means I'm not paying for a long rollout.", "Forty hazard types is a feature list, not a saving.", "No dollar outcome"),
+        "it_manager": ("Hours to go live tells me it's not a big install.", "Live in hours means video going to their cloud. Where is it stored?", "Video leaves the building"),
+        "safety_manager": ("Forty hazard types out of the box covers a lot more of my sites.", "More detections just means more alerts for my team to clear.", "Alert overload"),
+        "worker": ("If it catches the vehicle close calls, good.", "Every hazard on every shift sounds like every move on every shift.", "Feels like constant watching")},
+    ("watchpost", "F2"): {
+        "broker": ("Fine, clients like safety meetings.", "Not something I'd look at.", "Not relevant to me"),
+        "cfo": ("Cheap to use.", "Exporting clips doesn't move any number I track.", "No business outcome"),
+        "it_manager": ("Simple export, low support.", "Clips exported to who knows where. That's a data problem.", "Uncontrolled video exports"),
+        "safety_manager": ("Handy for the meeting, I guess.", "Exporting clips is my job getting bigger, not easier.", "More work for the safety team"),
+        "worker": ("Real footage beats a slideshow.", "So they pull up a clip of you in front of the whole crew.", "Used to call people out")},
+    ("watchpost", "F6"): {
+        "broker": ("SOC 2 helps the client's legal team.", "Not my area.", "Not relevant to me"),
+        "cfo": ("The certifications cover us legally.", "Ninety days of video is ninety days of liability.", "Long video retention"),
+        "it_manager": ("SOC 2 and ISO 27001 both. That gets a review started.", "Blurring on request means it's off by default. That fails our review.", "Blurring off by default"),
+        "safety_manager": ("Good to have the certifications.", "I'd have to explain to crews why we keep their video for 90 days.", "Hard to explain to crews"),
+        "worker": ("At least there's blurring.", "They keep the video 90 days so nothing gets lost. Nothing about us, anyway.", "Keeps video on workers")},
+    ("sightwell", "F1"): {
+        "broker": ("Cheap way for a client to show they're doing something.", "PPE alerts aren't a risk story.", "Too narrow to matter at renewal"),
+        "cfo": ("Free to start. That's an easy yes to try it.", "Free on three cameras means a bill on thirty.", "Cost at full scale unclear"),
+        "it_manager": ("Three cameras is a small enough pilot to approve.", "Self-serve means someone plugs it in without asking me.", "Shadow IT risk"),
+        "safety_manager": ("Hard hats and vests are an easy win.", "PPE is the easy part. My injuries come from lifts and forklifts.", "Misses the real injury causes"),
+        "worker": ("Hard hat reminders are fine.", "Cameras writing you up for a missing vest.", "PPE policing")},
+    ("lumenfield", "F1"): {
+        "broker": ("Serious injuries drive the big claims. Carriers care about that.", "Not sure it changes my renewal conversation.", "No link to renewal"),
+        "cfo": ("One fatality would cost more than anything else we spend on safety.", "Serious incidents are rare here. What about everyday claims?", "Rare events, unclear ROI"),
+        "it_manager": ("Works on existing cameras, so a smaller review.", "AI on our camera network means a security review.", "Security review"),
+        "safety_manager": ("High-energy hazards are what keep me up at night.", "Most of our claims are strains, not fatalities.", "Misses everyday injuries"),
+        "worker": ("If it stops the accidents that kill people, I'm for it.", "Cameras looking for the worst thing that could happen to you.", "Feels like being watched")},
+    ("lumenfield", "F2"): {
+        "broker": ("Expert-led plans look good to carriers.", "Not my world.", "Not relevant to me"),
+        "cfo": ("Expert help is useful.", "Consultants means a services bill every quarter.", "Ongoing consulting cost"),
+        "it_manager": ("No new tool for us to run.", "Outside consultants getting our video.", "Third parties with video access"),
+        "safety_manager": ("Former OSHA people on my side is real help.", "Consultants write plans. I need my crews to change.", "Doesn't reach the crews"),
+        "worker": ("Fine, if they actually fix stuff.", "Consultants we never meet deciding what we did wrong.", "Nothing for the crew")},
+    ("lumenfield", "F4"): {
+        "broker": ("Dollars per hazard helps me frame cost of risk.", "The CFO's tool, not mine.", "Not relevant to me"),
+        "cfo": ("A dollar figure on prevention is the number I've never had.", "A model's dollar figure is only as good as its assumptions.", "Model assumptions"),
+        "it_manager": ("Just a report.", "Depends what data it needs from our systems.", "Data it needs"),
+        "safety_manager": ("Finally finance sees what my program is worth.", "Putting a price on precursors makes safety a finance exercise.", "Turns safety into a number"),
+        "worker": ("Doesn't affect me.", "Pricing our injuries. Great.", "Pricing injuries")},
+    ("lumenfield", "F5"): {
+        "broker": ("Reviewed logs are cleaner at renewal.", "Not my world.", "Not relevant to me"),
+        "cfo": ("Expert review lowers inspection risk.", "Advisors reviewing paperwork sounds billable.", "Extra services cost"),
+        "it_manager": ("Mostly forms. Low risk.", "One more vendor holding incident data.", "Incident data with a vendor"),
+        "safety_manager": ("A second set of expert eyes before filing is worth having.", "Waiting on advisors slows down filing.", "Slower filing"),
+        "worker": ("Fine.", "Paperwork is paperwork.", "Doesn't affect me")},
+    ("lumenfield", "F6"): {
+        "broker": ("Privacy by default helps my clients' legal teams.", "Not my area.", "Not relevant to me"),
+        "cfo": ("Lowers the legal risk.", "Table stakes, not a reason to buy.", "Table stakes"),
+        "it_manager": ("Edge blurring by default plus FedRAMP in process. That's a serious security posture.", "FedRAMP 'in process' isn't FedRAMP.", "Certification not finished"),
+        "safety_manager": ("Makes the crew conversation easier.", "Crews won't care about FedRAMP.", "Doesn't speak to crews"),
+        "worker": ("Faces blurred by default. Good.", "Nothing here says what they won't use the video for.", "No promise against discipline")},
+}
+OUR_OBJ = {
+    "F1": {"broker": "No link to renewal yet", "cfo": "No dollar outcome", "it_manager": "Security review for the gateway", "safety_manager": "Alert fatigue", "worker": "Feels like being watched"},
+    "F2": {"broker": "Not relevant to me", "cfo": "No business outcome", "it_manager": "Another app to support", "safety_manager": "Crews tune out", "worker": "Another safety video"},
+    "F3": {"broker": "Needs to move a quote", "cfo": "That's the broker's job", "it_manager": "Data shared with third parties", "safety_manager": "Reporting, not prevention", "worker": "Data about workers to insurers"},
+    "F4": {"broker": "The CFO's tool", "cfo": "Only as good as the data", "it_manager": "Integrations to approve", "safety_manager": "Finance's dashboard", "worker": "Doesn't affect me"},
+    "F5": {"broker": "Not my world", "cfo": "Not a cost lever", "it_manager": "Incident data with a vendor", "safety_manager": "Our EHS tool already does this", "worker": "Paperwork is paperwork"},
+    "F6": {"broker": "Not my area", "cfo": "Table stakes", "it_manager": "Wants it in the contract", "safety_manager": "Crews won't read it", "worker": "Policies can change"},
+}
+
+
+def comp_row(p, brand, fid):
+    m = MSG[(brand, fid)]
+    fit = [x["intensity"] * max((m["themes"].get(t, 0) for t in x["tags"]), default=0) for x in p["pains"]]
+    align = 0.5 * sum(fit) / sum(x["intensity"] for x in p["pains"]) + 0.5 * max(fit)
+    privacy = max([x["intensity"] for x in p["pains"] if "privacy" in x["tags"]] + [0])
+    s = 24 + 46 * align + 0.8 * ROLE_FEAT[p["role"]][fid] + m["role"].get(p["role"], 0)
+    s -= 16 * (p["skepticism"] - 0.5) * (1.2 - m["proof"])
+    s += 8 * (m["proof"] - 0.5)
+    s -= 24 * m["privacy"] * max(0.0, privacy - 0.35)
+    if "nothing urgent" in p["trigger"]:
+        s -= 6
+    s += crng.gauss(0, 6)
+    s = int(max(2, min(98, round(s))))
+    if brand == "ours":
+        pos, neg = NOTES[fid][p["role"]]
+        obj = OUR_OBJ[fid][p["role"]]
+    else:
+        pos, neg, obj = COMP_NOTES[(brand, fid)][p["role"]]
+    conf = "high" if s >= 75 or s <= 25 else ("medium" if p["skepticism"] < 0.7 else crng.choice(["medium", "low"]))
+    return {"persona_id": p["id"], "score": s, "confidence": conf, "reaction": pos if s >= 55 else neg, "objection": obj}
+
+
+COMP_SAMPLE = []
+for role in market["roles"]:
+    pool = [p for p in market["personas"] if p["role"] == role["key"]]
+    for lvl, k in (("High", 7), ("Medium", 7), ("Low", 6)):
+        COMP_SAMPLE += [p for p in pool if p["pain_level"] == lvl][:k]
+
+competition = {
+    "competitors": COMPETITORS,
+    "features": COMP_FEATURES,
+    "messages": COMP_MESSAGES,
+    "sample_ids": [p["id"] for p in COMP_SAMPLE],
+    "results": {fid: {brand: [comp_row(p, brand, fid) for p in COMP_SAMPLE] for brand in COMP_MESSAGES[fid]}
+                for fid in COMP_FEATURES},
+}
+
+
 stress["claim_id"] = "K2"
 
 demo = {
@@ -515,6 +692,7 @@ demo = {
     "brief": BRIEF,
     "documents": DOCS,
     "adoption": adoption,
+    "competition": competition,
 }
 out = ROOT / "app" / "public" / "data" / "demo" / "q2-launch.json"
 out.parent.mkdir(parents=True, exist_ok=True)
@@ -539,3 +717,15 @@ for f in BRIEF["features"]:
         rs = agg[(f["id"], role)]
         line.append(f'{role[:6]} {round(mean(x["enthusiasm"] for x in rs))}/{round(mean(x["adopt_90d"] for x in rs))}->{round(mean(x["adopt_12m"] for x in rs))}')
     print(f["short"].ljust(18), " | ".join(line))
+
+feat_by_id = {f["id"]: f for f in BRIEF["features"]}
+print("competition sample", len(COMP_SAMPLE))
+for fid in COMP_FEATURES:
+    prim = feat_by_id[fid]["primary_roles"]
+    for brand, rows in competition["results"][fid].items():
+        by_role = defaultdict(list)
+        for r in rows:
+            by_role[by_id[r["persona_id"]]["role"]].append(r["score"])
+        main = [s for k, v in by_role.items() if k in prim for s in v]
+        print(fid, brand.ljust(10), "main", round(mean(main)), "all", round(mean(r["score"] for r in rows)),
+              " ".join(f"{k[:6]}={round(mean(v))}" for k, v in by_role.items()))

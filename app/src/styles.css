@@ -473,3 +473,72 @@ table.data .pain-cell { color: var(--ink-2); font-size: 12.5px; max-width: 360px
   .brief-dl { grid-template-columns: 1fr; gap: 2px; }
   .brief-dl dd { margin-bottom: 8px; }
 }
+
+/* ---- Competition ---- */
+.dialog.wide { width: min(880px, 100%); }
+.dialog-sub { font-size: 14px; font-weight: 650; margin-top: 4px; }
+.variant-edit details summary { cursor: pointer; font-size: 12.5px; font-weight: 600; color: var(--a); }
+.variant-edit details[open] summary { margin-bottom: 8px; }
+.variant-edit details textarea { width: 100%; margin-bottom: 8px; }
+.feature-edit { border: 1px solid var(--line); border-radius: var(--radius); padding: 10px 12px; display: flex; flex-direction: column; gap: 10px; }
+.feature-edit:not(.on) { background: var(--panel-2); }
+.msg-field span { color: var(--vc); }
+.msg-field textarea { border-left: 3px solid var(--vc); }
+
+.brand-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; }
+.brand-card h3 { margin-bottom: 4px; }
+.brand-card .record { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
+.h2h-delta { display: inline-block; font-size: 11px; font-weight: 650; border-radius: 4px; padding: 1px 5px; line-height: 1.5; white-space: nowrap; }
+.h2h-delta.loss { background: var(--flag-soft); color: var(--flag-ink); }
+.h2h-delta.win { background: var(--a-soft); color: var(--a); }
+.h2h-delta.tie { background: var(--line-2); color: var(--ink-2); }
+.us-tag { font-size: 11px; font-weight: 500; color: var(--ink-3); }
+.matrix.h2h thead th.vcol { min-width: 118px; }
+.matrix.h2h .seg small { display: block; margin: 0; font-weight: 400; }
+.matrix.h2h .seg-link { font-size: 13px; text-align: left; color: var(--ink); }
+.matrix.h2h tr.on .seg { box-shadow: inset 3px 0 0 var(--a); }
+.matrix.h2h tr.on .seg-link { color: var(--a); }
+.cell-inner.none { background: var(--panel-2); color: var(--ink-3); font-weight: 500; font-size: 12px; border: 1px dashed var(--line); }
+
+.h2h-msgs { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+.msg-card { display: flex; flex-direction: column; }
+.msg-card.lead { box-shadow: var(--shadow), 0 0 0 2px var(--vc); }
+.msg-copy { font-size: 14px; color: var(--ink); margin: 8px 0 12px; flex: 1; }
+.h2h-reco { margin-top: 0; }
+
+.role-bars { display: flex; flex-direction: column; }
+.rb-row { display: grid; grid-template-columns: 170px minmax(0, 1fr) 130px; gap: 14px; align-items: center; padding: 6px 0; border-bottom: 1px solid var(--line-2); }
+.rb-row:last-child { border-bottom: 0; }
+.rb-head { font-size: 11.5px; color: var(--ink-3); padding-top: 0; }
+.rb-axis { display: flex; justify-content: space-between; }
+.rb-label { font-size: 13px; }
+.rb-row.main .rb-label { font-weight: 650; }
+.rb-label small { display: block; color: var(--ink-3); font-size: 11px; font-weight: 500; }
+.rb-track { position: relative; height: 22px; }
+.rb-mid { position: absolute; left: 50%; top: 0; bottom: 0; width: 2px; margin-left: -1px; background: var(--line); }
+.rb-bar { position: absolute; top: 6px; height: 10px; border-radius: 3px; background: var(--vc); }
+.rb-bar.even { opacity: 0.35; }
+.rb-vals { text-align: right; font-size: 12.5px; color: var(--ink-2); white-space: nowrap; }
+.rb-vals span { display: inline-block; min-width: 34px; margin-left: 8px; font-weight: 650; }
+.rb-vals.them span { color: var(--flag-ink); }
+.rb-vals.us span { color: var(--a); }
+.rb-vals.even span { color: var(--ink-3); }
+
+.quote.pair { gap: 10px; }
+.quote.pair .who { line-height: 1.35; }
+.pair-side { border-left: 3px solid var(--vc); padding: 6px 8px 6px 10px; border-radius: 0 6px 6px 0; }
+.pair-side.lead { background: var(--vsoft); }
+.pair-head { display: flex; justify-content: space-between; font-size: 12px; font-weight: 650; color: var(--vc); margin-bottom: 3px; }
+.pair-side blockquote { margin: 0; font-size: 13px; }
+
+.findings li.c-loss::before, .findings li.c-split::before { background: var(--flag); }
+.findings li.c-veto::before { background: var(--hi); }
+.findings li.c-tie::before { background: var(--lo); }
+.findings li.c-win::before { background: var(--a); }
+.findings li.c-open::before { background: var(--b); }
+
+@media (max-width: 820px) {
+  .h2h-msgs { grid-template-columns: 1fr; }
+  .rb-row { grid-template-columns: 96px minmax(0, 1fr) 96px; gap: 8px; }
+}
+.msg-field textarea { font-weight: 400; }

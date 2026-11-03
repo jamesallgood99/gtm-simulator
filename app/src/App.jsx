@@ -5,13 +5,18 @@ import TalkView from './components/TalkView.jsx';
 import StressView from './components/StressView.jsx';
 import AdoptionView from './components/AdoptionView.jsx';
 import DocumentsView from './components/DocumentsView.jsx';
+import CompetitionView from './components/CompetitionView.jsx';
+import CompetitionDialog from './components/CompetitionDialog.jsx';
 import { MarketView, PersonasView } from './components/MarketView.jsx';
 import { SettingsDialog, CampaignDialog } from './components/Dialogs.jsx';
 import { Icon } from './components/ui.jsx';
 import { analyze } from './lib/analysis.js';
 import { stratifiedSample } from './lib/stats.js';
-import { runScore, runStress, runTalk, runExtract, runMessages, runAdoption, resultsToCsv, parseCsv } from './lib/simulate.js';
+import { runScore, runStress, runTalk, runExtract, runMessages, runAdoption, runCompetition, runMapCompetitor, resultsToCsv, parseCsv } from './lib/simulate.js';
+import { analyzeCompetition, runCost, competitionToCsv } from './lib/competition.js';
 import { readDocument, pastedDocument } from './lib/docs.js';
+
+const EMPTY_COMP = { competitors: [], features: [], messages: {}, results: {}, sample_ids: [], source: 'live' };
 
 const REPO_URL = 'https://github.com/jamesallgood99/gtm-simulator';
 
@@ -21,6 +26,7 @@ const NAV = [
   ] },
   { group: 'Simulate', items: [
     { id: 'compare', label: 'Compare', hint: 'A vs B', icon: 'compare' },
+    { id: 'competition', label: 'Competition', hint: 'us vs. them', icon: 'rival' },
     { id: 'score', label: 'Score', hint: 'one message', icon: 'score' },
     { id: 'talk', label: 'Talk', hint: 'one persona', icon: 'talk' },
     { id: 'stress', label: 'Stress', hint: 'weakest claim', icon: 'stress' },
@@ -76,6 +82,7 @@ export default function App() {
   const [sampleDocs, setSampleDocs] = useState(false);
   const [brief, setBrief] = useState(null);
   const [adoption, setAdoption] = useState(null);
+  const [competition, setCompetition] = useState(EMPTY_COMP);
   const [stressSeed, setStressSeed] = useState(null);
   const [campaign, setCampaign] = useState(null);
   const [results, setResults] = useState({});
@@ -107,6 +114,7 @@ export default function App() {
         setTalkPersona(d.talk.persona_id);
         setBrief({ ...d.brief, source_count: d.documents?.length });
         setAdoption(d.adoption ?? null);
+        if (d.competition) setCompetition({ ...d.competition, source: 'demo' });
         if (d.documents?.length) {
           Promise.all(d.documents.map((doc) => fetch(`./${doc.path}`).then((r) => (r.ok ? r.text() : '')).catch(() => '')))
             .then((texts) => {
@@ -125,6 +133,8 @@ export default function App() {
 
   const live = Boolean(settings.apiKey);
   const analysis = useMemo(() => (market && campaign ? analyze(market, campaign.variants, results) : null), [market, campaign, results]);
+  const compAnalysis = useMemo(() => (market && brief ? analyzeCompetition(market, brief, competition) : null), [market, brief, competition]);
+  const compSampleSize = Math.min(settings.sampleSize, 50);
 
   const saveSettings = (s) => {
     store.del('sms.key');
@@ -282,6 +292,7 @@ export default function App() {
       const b = { ...(await runExtract({ settings, market, docs, signal: ctrl.signal })), source_count: docs.length };
       setBrief(b);
       setAdoption(null);
+      setCompetition((c) => ({ ...EMPTY_COMP, competitors: c.competitors }));
       setStress(null);
       setStressSeed(null);
       await writeMessaging(b, ctrl);
@@ -323,6 +334,57 @@ export default function App() {
     }
   };
 
+  // ---- Competition ----
+  // fresh: rescore every message on a new sample. Otherwise score only messages without results,
+  // on the sample the kept results came from, so every number in the table shares one panel.
+  const runComp = async (c, { fresh = true } = {}) => {
+    if (!live) return needKey();
+    setError('');
+    setBusy(true);
+    const ctrl = new AbortController();
+    abortRef.current = ctrl;
+    try {
+      const reuse = !fresh && c.source === 'live' && c.sample_ids?.length && Object.keys(c.results ?? {}).length;
+      const byId = Object.fromEntries(market.personas.map((p) => [p.id, p]));
+      const sample = reuse ? c.sample_ids.map((id) => byId[id]).filter(Boolean) : stratifiedSample(market.personas, compSampleSize, market.roles, 7);
+      const kept = reuse ? c.results : {};
+      const todo = Object.fromEntries(c.features.map((fid) => [fid, Object.fromEntries(
+        Object.entries(c.messages[fid] ?? {}).filter(([brand, m]) => m?.trim() && !kept[fid]?.[brand]),
+      )]));
+      const sub = { ...c, messages: todo };
+      const { calls } = runCost(sub, sample.length);
+      setProgress({ done: 0, total: Math.max(1, calls), label: calls ? `Scoring ${runCost(sub, 20).messages} messages blind against ${sample.length} personas` : 'Nothing new to score' });
+      const res = calls ? await runCompetition({
+        settings, market, brief, comp: sub, sample, signal: ctrl.signal,
+        onProgress: (done, total) => setProgress((p) => ({ ...p, done, total })),
+      }) : { results: {} };
+      const merged = Object.fromEntries(c.features.map((fid) => [fid, { ...(kept[fid] ?? {}), ...(res.results[fid] ?? {}) }]));
+      setCompetition({ ...c, results: merged, sample_ids: sample.map((p) => p.id), source: 'live' });
+    } catch (e) {
+      if (e.name !== 'AbortError') setError(e.message);
+    } finally {
+      setBusy(false);
+      setProgress(null);
+    }
+  };
+
+  const saveComp = (next, run) => {
+    setDialog(null);
+    // Keep results only where the message didn't change.
+    const results = {};
+    for (const fid of next.features) {
+      for (const [brand, m] of Object.entries(next.messages[fid] ?? {})) {
+        const old = competition.results?.[fid]?.[brand];
+        if (old && competition.messages?.[fid]?.[brand] === m) (results[fid] ??= {})[brand] = old;
+      }
+    }
+    const c = { ...competition, ...next, results };
+    setCompetition(c);
+    if (run) runComp(c, { fresh: c.source !== 'live' });
+  };
+
+  const mapCompetitor = (name, text) => runMapCompetitor({ settings, market, name, text, features: brief.features });
+
   const stressClaim = (c) => {
     setStressSeed({ claim: c.text, theme: c.theme, key: Date.now() });
     setStress((prev) => (prev?.claim === c.text ? prev : sampleDocs && demo?.stress.claim === c.text ? demo.stress : null));
@@ -337,6 +399,7 @@ export default function App() {
   const heads = {
     documents: ['Start with your documents', 'Upload the PRDs, MRDs and creative briefs for a launch. Claude reads them, pulls out the features and claims, and writes the messaging the market will test.'],
     adoption: ['Adoption', 'How each persona takes to each feature in the PRD, 90 days after launch and a year in.'],
+    competition: ['Competition', 'Your messaging against theirs, feature by feature. The same personas read both, blind, so you see whose copy lands and with whom.'],
     compare: [`Campaign simulation: ${campaign.name}`, analysis
       ? `Testing ${variantCount} message variation${variantCount > 1 ? 's' : ''} against ${sampleSize} AI personas from ${market.market_name.toLowerCase()}.`
       : `${variantCount} message variation${variantCount > 1 ? 's' : ''} ready to test against ${market.market_name.toLowerCase()}.`],
@@ -395,6 +458,12 @@ export default function App() {
             <button className="btn small" onClick={() => setDialog('settings')}>Add API key</button>
           </div>
         )}
+        {competition.source === 'demo' && live && view === 'competition' && (
+          <div className="banner">
+            <span>Still showing demo data. Run the head-to-head to score these messages with {settings.model}.</span>
+            <button className="btn small" onClick={() => runComp(competition)} disabled={busy}>Run live</button>
+          </div>
+        )}
         {source === 'demo' && live && view === 'compare' && (
           <div className="banner">
             <span>Still showing demo data. Run the simulation to score these messages with {settings.model}.</span>
@@ -422,6 +491,15 @@ export default function App() {
             <h1>{heads[view][0]}</h1>
             <p>{heads[view][1]}</p>
           </div>
+          {view === 'competition' && brief?.features?.length > 0 && (
+            <div className="actions">
+              <button className="btn" onClick={() => setDialog('competition')}><Icon name="edit" />Edit competitors</button>
+              <button className="btn" disabled={!compAnalysis?.features.some((x) => x.cells.ours?.scored)}
+                onClick={() => download('competition-results.csv', competitionToCsv(competition, compAnalysis.brands, compAnalysis.features, compAnalysis.personasById))}>
+                <Icon name="download" />Export CSV
+              </button>
+            </div>
+          )}
           {view === 'compare' && (
             <div className="actions">
               <button className="btn" onClick={() => setDialog('campaign')}><Icon name="edit" />Edit campaign</button>
@@ -459,11 +537,21 @@ export default function App() {
           />
         )}
         {view === 'adoption' && <AdoptionView market={market} brief={brief} adoption={adoption} live={live} busy={busy} onRun={runAdopt} onGo={setView} onTalk={openTalk} />}
+        {view === 'competition' && (
+          <CompetitionView
+            market={market} brief={brief} comp={competition} analysis={compAnalysis} live={live} busy={busy}
+            cost={runCost(competition, compSampleSize)}
+            onRun={() => runComp(competition)} onEdit={() => setDialog('competition')} onGo={setView} onTalk={openTalk}
+          />
+        )}
         {view === 'market' && <MarketView market={market} />}
         {view === 'personas' && <PersonasView market={market} onTalk={openTalk} />}
       </main>
 
       {dialog === 'settings' && <SettingsDialog settings={settings} onSave={saveSettings} onClose={() => setDialog(null)} />}
+      {dialog === 'competition' && brief && (
+        <CompetitionDialog comp={competition} brief={brief} live={live} onSave={saveComp} onMap={mapCompetitor} onClose={() => setDialog(null)} />
+      )}
       {dialog === 'campaign' && <CampaignDialog campaign={campaign} live={live} onSave={saveCampaign} onClose={() => setDialog(null)} />}
     </div>
   );

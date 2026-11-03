@@ -3,12 +3,14 @@ import {
   scoreSystem, scoreUser, SCORE_TOOL, stressSystem, stressUser, STRESS_TOOL, talkSystem,
   extractSystem, EXTRACT_TOOL, docsUserContent, messagesSystem, messagesUser, MESSAGES_TOOL,
   adoptSystem, adoptUser, ADOPT_TOOL,
+  competitionProduct, mapCompetitorSystem, mapCompetitorUser, MAP_COMPETITOR_TOOL,
 } from './prompts.js';
+import { anonymize } from './competition.js';
 
 const BATCH = 20;
 
 /** Score one or more variants against the same persona sample. */
-export async function runScore({ settings, market, product, variants, sample, onProgress, signal }) {
+export async function runScore({ settings, market, product, context, variants, sample, onProgress, signal }) {
   const batches = [];
   for (let i = 0; i < sample.length; i += BATCH) batches.push(sample.slice(i, i + BATCH));
   const total = variants.length * batches.length;
@@ -22,7 +24,7 @@ export async function runScore({ settings, market, product, variants, sample, on
           apiKey: settings.apiKey,
           model: settings.model,
           system: scoreSystem(market),
-          messages: [{ role: 'user', content: scoreUser({ message: v.message, variantName: v.name, product, personas: batch }) }],
+          messages: [{ role: 'user', content: scoreUser({ message: v.message, variantName: v.name, product, context, personas: batch }) }],
           tools: [SCORE_TOOL],
           toolChoice: { type: 'tool', name: SCORE_TOOL.name },
           maxTokens: 6000,
@@ -139,6 +141,59 @@ export async function runAdoption({ settings, product, features, sample, market,
   });
   const out = await pool(jobs, settings.concurrency ?? 3, () => onProgress?.(++done, batches.length));
   return { sample_ids: sample.map((p) => p.id), rows: out.flat() };
+}
+
+/**
+ * Competition: score our message and every competitor's message for each feature, blind, against
+ * one shared persona sample. Returns results keyed by feature, then brand.
+ */
+export async function runCompetition({ settings, market, brief, comp, sample, onProgress, signal }) {
+  const names = [brief.product_name, ...comp.competitors.map((c) => c.name)].filter(Boolean);
+  const variants = [];
+  for (const fid of comp.features) {
+    const f = brief.features.find((x) => x.id === fid);
+    if (!f) continue;
+    for (const [brand, msg] of Object.entries(comp.messages?.[fid] ?? {})) {
+      if (!msg?.trim()) continue;
+      variants.push({ id: `${fid}::${brand}`, name: '', message: anonymize(msg, names), feature: f });
+    }
+  }
+  // One runScore call per feature keeps the product context right; progress spans the whole run.
+  const batches = Math.ceil(sample.length / 20);
+  const total = variants.length * batches;
+  let done = 0;
+  const results = {};
+  for (const fid of comp.features) {
+    const vs = variants.filter((v) => v.feature.id === fid);
+    if (!vs.length) continue;
+    const base = done;
+    const res = await runScore({
+      settings, market, context: competitionProduct(vs[0].feature), variants: vs, sample, signal,
+      onProgress: (d) => { done = base + d; onProgress?.(done, total); },
+    });
+    results[fid] = Object.fromEntries(Object.entries(res).map(([id, rows]) => [id.split('::')[1], rows]));
+  }
+  return { sample_ids: sample.map((p) => p.id), results };
+}
+
+/** Read a competitor's own copy and map it to our features. */
+export async function runMapCompetitor({ settings, market, name, text, features, signal }) {
+  const res = await callClaude({
+    apiKey: settings.apiKey,
+    model: settings.model,
+    system: mapCompetitorSystem(market),
+    messages: [{ role: 'user', content: mapCompetitorUser({ name, text, features }) }],
+    tools: [MAP_COMPETITOR_TOOL],
+    toolChoice: { type: 'tool', name: MAP_COMPETITOR_TOOL.name },
+    maxTokens: 3000,
+    signal,
+  });
+  const out = toolInput(res, MAP_COMPETITOR_TOOL.name);
+  const ids = new Set(features.map((f) => f.id));
+  return {
+    positioning: out.positioning ?? '',
+    messages: Object.fromEntries((out.messages ?? []).filter((m) => ids.has(m.feature_id) && m.message?.trim()).map((m) => [m.feature_id, m.message.trim()])),
+  };
 }
 
 // ---- CSV import/export so runs from the Claude skill and the dashboard are interchangeable ----

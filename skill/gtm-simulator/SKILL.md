@@ -123,6 +123,25 @@ Input: the feature list from the brief (or a PRD the user shares).
    group (a champion loves it and a role with a veto doesn't), what fades, what grows, and any
    feature no role is enthusiastic about.
 
+### Compete: our message against theirs, feature by feature
+Input: the feature list from the brief, our message for each feature, and each competitor's message
+for the same features. If the user shares a competitor's own copy (site pages, a deck, ads), pull out
+what they say about each of our features in their words. Never add a claim they didn't make, and
+leave a feature blank when they don't address it: an uncontested feature is a finding.
+1. Hide every brand name (ours and theirs) behind "the vendor" before scoring, so personas judge
+   the copy, not the logo. Tell personas only the category and the capability being described.
+2. Score every message for a feature against the **same** stratified sample (50 personas, 10 per
+   role), each message on its own. Never show a persona two messages at once.
+3. The main personas for a feature are the roles the PRD built it for. Report each message's
+   average with them, then the gap (theirs minus ours), paired by persona. Call a lead only when the
+   gap is 3+ points and holds up across the sample; otherwise it's a tie.
+4. Report a feature × brand table, then what stands out: where a competitor beats us with the main
+   personas, where they pull a blocking role (finance, IT, the broker) 8+ points ahead even if it
+   isn't built for them, splits where they win one role and we win another, ties, our clearest
+   lead, and features no competitor messages.
+5. For the biggest gaps, quote the same persona reacting to both messages. That pair is usually the
+   fastest way to see what their copy does that ours doesn't.
+
 ## Output discipline
 
 - Numbers come with their sample size: "CFOs 38 (n=10)".
@@ -133,5 +152,7 @@ Input: the feature list from the brief (or a PRD the user shares).
 - If the user wants the numbers as a file, write a CSV with one row per persona per variant:
   `persona_id, role, industry, size_band, pain_level, variant, score, confidence, reaction, objection`.
   The dashboard in this repo can import it.
+- For competition, write one row per persona per feature per brand:
+  `feature, brand, persona_id, role, industry, size_band, pain_level, score, confidence, reaction, objection`.
 - For adoption, write one row per persona per feature:
   `persona_id, feature_id, enthusiasm, adopt_90d, adopt_12m, note`.

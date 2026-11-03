@@ -68,6 +68,7 @@ the features go to Adoption.
 | **Talk** | Interview one persona live and let them push back on your pitch. |
 | **Stress** | Point your toughest critics at your weakest claim, and get back a version that survives them. |
 | **Compare** | Run versions A, B and C side by side against the same personas. |
+| **Competition** | Put your message for each feature next to each competitor's message for the same feature, and see whose copy lands harder, with which roles. |
 | **Adoption** | Match every feature in the PRD against every persona: how enthusiastic each one is, and how many are still using it at 90 days and at 12 months. |
 
 ### The two rules
@@ -90,6 +91,32 @@ cost-of-risk dashboard grow as renewal comes around and history builds up.
 
 The demo runs on three fictional sample documents for a made-up product, Keelstone, in
 `app/public/data/samples/`. Read them to see what the extraction and messaging are built from.
+
+### Competition
+
+Competition takes the features from the PRD and compares your message for each one against each
+competitor's message for the same feature. Paste a competitor's own copy (their homepage, product
+pages, a deck) and Claude pulls out what they say about each of your features, in their words. Where
+they say nothing, the column stays empty. An uncontested feature is open ground.
+
+Three things keep the comparison honest:
+
+- **Blind scoring.** Brand names are swapped for "the vendor" before any persona reads a message, so
+  you're testing copy, not logos.
+- **Same personas, every message.** Each persona reads every message for a feature, one at a time.
+  The gap is measured persona by persona, so a lead only counts when it holds up across the sample.
+  Gaps under 3 points, or ones that could go either way, are called a tie.
+- **Main personas first.** Each feature is scored with the roles the PRD built it for, and the
+  dashboard flags when a competitor pulls a blocking role (CFO, IT, the broker) well ahead anyway.
+
+In the demo, the competitors are the fictional rivals from the
+[Competitive Intel Tracker](https://github.com/jamesallgood99/competitive-intel-tracker). Watchpost AI's
+hazard-detection message edges out Keelstone's with safety managers. Sightwell's "start free" message
+loses safety managers but pulls CFOs 14 points higher. Lumenfield's dollar-figure framing wins CFOs on
+cost of risk, and nobody messages the broker report.
+
+A run is one API call per message per 20 personas: six features with three competitors is 45 calls at
+50 personas. After you edit messages, only the changed ones are re-scored, on the same personas.
 
 ### What it's good at, and what it isn't
 
@@ -176,6 +203,7 @@ app/                        the React dashboard (Vite)
   src/lib/docs.js           reads PDF, Word, Markdown and text uploads in the browser
   src/lib/stats.js          Monte Carlo, stratified sampling, critic selection
   src/lib/analysis.js       segment splits and recommendation logic
+  src/lib/competition.js    head-to-head scoring, paired gaps, blind brand masking
 ```
 
 ## Let's talk

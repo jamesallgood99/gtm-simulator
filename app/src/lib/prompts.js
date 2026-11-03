@@ -30,8 +30,9 @@ ${RUBRIC}
 Score every persona you are given. Each persona reacts independently; do not let one persona's view influence another's.`;
 }
 
-export function scoreUser({ message, variantName, product, personas }) {
-  return `${product ? `What the company sells: ${product}\n\n` : ''}Message being tested (${variantName}):
+export function scoreUser({ message, variantName, product, context, personas }) {
+  const lead = context ? `Context: ${context}\n\n` : product ? `What the company sells: ${product}\n\n` : '';
+  return `${lead}Message being tested${variantName ? ` (${variantName})` : ''}:
 """
 ${message}
 """
@@ -298,5 +299,59 @@ export const ADOPT_TOOL = {
       },
     },
     required: ['rows'],
+  },
+};
+
+// ---- Competition ----
+
+/** Context for a blind head-to-head: personas know the category and the capability, not the brand. */
+export function competitionProduct(feature) {
+  return `A vendor in this category, describing one capability: ${feature.name}. The vendor's name is hidden. Judge the message as written, the way you'd react to it on a website or in a cold email.`;
+}
+
+export function mapCompetitorSystem(market) {
+  return `You help a product marketer compare their messaging with a competitor's, capability by capability, in this market: ${market.product_category}.
+
+You get the competitor's own copy (website pages, a deck, ads, a battlecard) and a list of the marketer's features.
+For each feature, find what the competitor says about the same capability.
+- Use the competitor's words. Quote them, or trim and join their sentences into one or two. Never add a claim, number or benefit they didn't state.
+- Skip any feature their copy doesn't address. A missing message is a finding, so don't stretch to fill it.
+- Write a one-sentence summary of how they position themselves overall.`;
+}
+
+export function mapCompetitorUser({ name, text, features }) {
+  return `Competitor: ${name}
+
+Our features:
+${features.map((f) => `[${f.id}] ${f.name}: ${f.description}`).join('\n')}
+
+Their copy:
+"""
+${text.slice(0, 60000)}
+"""
+
+Record what they say with the record_competitor_messages tool.`;
+}
+
+export const MAP_COMPETITOR_TOOL = {
+  name: 'record_competitor_messages',
+  description: 'Record the competitor\'s positioning and their message for each matching feature.',
+  input_schema: {
+    type: 'object',
+    properties: {
+      positioning: { type: 'string', description: 'One sentence on how they position themselves.' },
+      messages: {
+        type: 'array',
+        items: {
+          type: 'object',
+          properties: {
+            feature_id: { type: 'string' },
+            message: { type: 'string', description: 'Their message for this capability, in their words. One or two sentences.' },
+          },
+          required: ['feature_id', 'message'],
+        },
+      },
+    },
+    required: ['positioning', 'messages'],
   },
 };
