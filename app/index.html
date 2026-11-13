@@ -17,6 +17,8 @@
   .ja-ribbon a:hover, .ja-ribbon a:focus-visible { opacity: 1; text-decoration: underline; }
   .ja-ribbon a[aria-current="page"] { opacity: 1; font-weight: 600; padding-bottom: 3px; border-bottom: 2px solid #7f98ff; }
   .ja-ribbon .ja-gh { margin-left: auto; }
+  .ja-ribbon .ja-tour { font: inherit; color: #15181e; background: #7f98ff; border: 0; border-radius: 3px; padding: 5px 10px; font-weight: 600; cursor: pointer; }
+  .ja-ribbon .ja-tour:hover, .ja-ribbon .ja-tour:focus-visible { background: #a3b5ff; }
 </style>
 <div class="ja-ribbon" role="navigation" aria-label="James Allgood's projects">
   <a class="ja-who" href="https://jamesallgood.com/ai-skills.html">James Allgood</a>
@@ -26,6 +28,7 @@
     <a href="https://jamesallgood99.github.io/acme-prospecting-agents/">Prospecting Agents</a>
   </nav>
   <a class="ja-gh" href="https://github.com/jamesallgood99/gtm-simulator">View source on GitHub</a>
+  <button class="ja-tour" type="button" data-tour-open>Take the tour</button>
 </div>
 
 <style>

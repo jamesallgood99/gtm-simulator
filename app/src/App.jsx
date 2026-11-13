@@ -7,6 +7,7 @@ import AdoptionView from './components/AdoptionView.jsx';
 import DocumentsView from './components/DocumentsView.jsx';
 import CompetitionView from './components/CompetitionView.jsx';
 import CompetitionDialog from './components/CompetitionDialog.jsx';
+import Tour from './components/Tour.jsx';
 import { MarketView, PersonasView } from './components/MarketView.jsx';
 import { SettingsDialog, CampaignDialog } from './components/Dialogs.jsx';
 import { Icon } from './components/ui.jsx';
@@ -552,6 +553,7 @@ export default function App() {
       {dialog === 'competition' && brief && (
         <CompetitionDialog comp={competition} brief={brief} live={live} onSave={saveComp} onMap={mapCompetitor} onClose={() => setDialog(null)} />
       )}
+      {demo && <Tour market={market} demo={demo} onGo={setView} />}
       {dialog === 'campaign' && <CampaignDialog campaign={campaign} live={live} onSave={saveCampaign} onClose={() => setDialog(null)} />}
     </div>
   );
