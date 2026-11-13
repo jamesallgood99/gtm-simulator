@@ -8,6 +8,31 @@
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%2317233A'/%3E%3Crect x='7' y='17' width='4' height='8' rx='1' fill='%232E6BE6'/%3E%3Crect x='14' y='9' width='4' height='16' rx='1' fill='%2311A07A'/%3E%3Crect x='21' y='13' width='4' height='12' rx='1' fill='%237B5CF0'/%3E%3C/svg%3E" />
   </head>
   <body>
+    <!-- Project ribbon: cross-links James Allgood's open-source GTM tools. -->
+<style>
+  .ja-ribbon { position: sticky; top: 0; z-index: 40; box-sizing: border-box; height: 36px; display: flex; align-items: center; gap: 18px; padding: 0 24px; background: #15181e; color: #f3f4f6; font: 13px/1 "IBM Plex Sans", "Segoe UI", Roboto, Arial, sans-serif; overflow-x: auto; white-space: nowrap; }
+  .ja-ribbon .ja-who { font-weight: 600; color: #f3f4f6; opacity: 1; margin-right: 6px; }
+  .ja-ribbon nav { display: flex; gap: 16px; }
+  .ja-ribbon a { color: #f3f4f6; opacity: 0.75; text-decoration: none; }
+  .ja-ribbon a:hover, .ja-ribbon a:focus-visible { opacity: 1; text-decoration: underline; }
+  .ja-ribbon a[aria-current="page"] { opacity: 1; font-weight: 600; padding-bottom: 3px; border-bottom: 2px solid #7f98ff; }
+  .ja-ribbon .ja-gh { margin-left: auto; }
+</style>
+<div class="ja-ribbon" role="navigation" aria-label="James Allgood's projects">
+  <a class="ja-who" href="https://jamesallgood.com/ai-skills.html">James Allgood</a>
+  <nav>
+    <a href="https://jamesallgood99.github.io/gtm-simulator/" aria-current="page">GTM Simulator</a>
+    <a href="https://jamesallgood99.github.io/competitive-intel-tracker/">Competitive Intel Tracker</a>
+    <a href="https://jamesallgood99.github.io/acme-prospecting-agents/">Prospecting Agents</a>
+  </nav>
+  <a class="ja-gh" href="https://github.com/jamesallgood99/gtm-simulator">View source on GitHub</a>
+</div>
+
+<style>
+  /* Make room for the ribbon above the app shell. */
+  #root { height: calc(100% - 36px) !important; }
+  .sidebar { top: 36px !important; height: calc(100vh - 36px) !important; }
+</style>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
